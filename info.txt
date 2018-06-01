@@ -1,0 +1,40 @@
+- Finding papers / models for houes prediction using NN
+- Trying to build a model using keras.
+- Perhaps it is better to start without selu and then add selu after we have predictions working
+
+Added more features, learning stopped.. Need to investigate
+
+Bibliograhpy/references:
+- Neural Network Based Model for Predicting Housing Market
+Performance
+Ahmed Khalafallah**
+Department of Civil, Environmental, and Construction Engineering,
+University of Central Florida, Orlando, FL 32816-2450, USA
+
+- https://nataliarslan.com/otherprojects/2017/9/26/predicting-house-prices-in-stockholm-using-tensorflow
+
+- A Neural Network based model for real estate price estimation
+considering environmental quality of property location
+
+
+
+
+# 10 epochs
+melbourne_model = keras.models.Sequential()
+melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=len(input_features)))
+melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
+melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # MAE: 922165
+
+# 20 epochs
+melbourne_model = keras.models.Sequential()
+melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=len(input_features)))
+melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
+melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # MAE: 462209
+
+
+# 30 epochs
+melbourne_model = keras.models.Sequential()
+melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=len(input_features)))
+melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
+melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # 'MAE:', 529127.20319561008
+
