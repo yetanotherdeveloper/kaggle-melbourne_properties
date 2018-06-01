@@ -10,14 +10,9 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 import argparse
 
-
-def train(model_name):
-    melbourne_file_path = './melb_data.csv'
+def load_and_preprocess_data(melbourne_file_path):
     melbourne_data = pd.read_csv(melbourne_file_path)
     melbourne_data = melbourne_data.dropna(axis=0)
-    y = melbourne_data.Price
-    input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
-    #input_features = ['Bathroom','Bedroom2','BuildingArea','Car','Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Postcode', 'Price', 'Propertycount', 'Rooms' ]
 
     # Replace string values of CouncilArea with onehott representation
     council = melbourne_data['CouncilArea']
@@ -55,31 +50,41 @@ def train(model_name):
     for i in range(0,len(datas.values)):
         splits = datas.values[i].split('/')
         datas.values[i] = int(splits[0]) + int(splits[1])*32 + int(splits[2])*32*12
+    return melbourne_data
 
-    X = melbourne_data[input_features]
-    trainX, ValX, trainY, ValY = train_test_split(X,y)
-
+def make_model(num_features):
     # Building model: 
     # TODO: Add Selu + Alpha dropout
     melbourne_model = keras.models.Sequential()
-    melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=len(input_features)))
+    melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=num_features))
     melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
     melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # MAE: 922165
 
-    #melbourne_model.add(keras.layers.Dense(1, activation='relu',input_dim=len(input_features))) # MAE: 1072223
-
-    # TODO: Add some metric
-    sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True) # Does not train, flat loss chart
-    #sgd = keras.optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9)
+#    sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True) # Does not train, flat loss chart
+    sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9)
     #sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9)
     melbourne_model.compile(loss="mean_squared_error", optimizer=sgd)
+    return melbourne_model
+
+def train(model_name):
+    melbourne_data = load_and_preprocess_data('./melb_data.csv')
+
+    input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
+    #input_features = ['Bathroom','Bedroom2','BuildingArea','Car','Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Postcode', 'Price', 'Propertycount', 'Rooms' ]
+    X = melbourne_data[input_features]
+    y = melbourne_data.Price
+
+    #melbourne_model.add(keras.layers.Dense(1, activation='relu',input_dim=len(input_features))) # MAE: 1072223
+    melbourne_model = make_model(len(input_features))
+
+    # TODO: Add some metric
     #melbourne_model.compile(loss="mean_squared_error", optimizer="adagrad")
     #melbourne_model.compile(loss="mse", optimizer="rmsprop")
 
-    show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=10, verbose=1)
+    show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=30, verbose=1)
     checkpoint = keras.callbacks.ModelCheckpoint(filepath="saved_models/melbourne_model.epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
 
-    history = melbourne_model.fit(trainX.values, trainY.values, validation_split=0.2, epochs=30, batch_size=1,callbacks=[show_stopper,checkpoint])
+    history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=40, batch_size=1,callbacks=[show_stopper,checkpoint])
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title("Loss/cost chart")
@@ -88,9 +93,9 @@ def train(model_name):
     plt.legend(["train","val"],loc="upper right")
     plt.show()
     print("Making predictions for following houses")
-    predictions = melbourne_model.predict(ValX.values)
+    predictions = melbourne_model.predict(X.values)
 
-    print("MAE:",mean_absolute_error(predictions,ValY.values))
+    print("MAE:",mean_absolute_error(predictions,y.values))
 
 #import pdb; pdb.set_trace()
 # The Melbourne data has somemissing values (some houses for which some variables weren't recorded.)
@@ -99,7 +104,27 @@ def train(model_name):
 # So we will take the simplest option for now, and drop those houses from our data. 
 #Don't worry about this much for now, though the code is:
 
-#7 dropna drops missing values (think of na as "not available")
+def infer(model_name):
+    if model_name == "":
+        print("Error: Inference mode require model given with --model option")
+        exit(-1)
+    melbourne_data = load_and_preprocess_data('./melb_data.csv')
+
+    input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
+    #input_features = ['Bathroom','Bedroom2','BuildingArea','Car','Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Postcode', 'Price', 'Propertycount', 'Rooms' ]
+    X = melbourne_data[input_features]
+    y = melbourne_data.Price
+
+    #melbourne_model.add(keras.layers.Dense(1, activation='relu',input_dim=len(input_features))) # MAE: 1072223
+    melbourne_model = make_model(len(input_features))
+    melbourne_model.load_weights(model_name)
+    predictions = melbourne_model.predict(X.values)
+    print("MAE:",mean_absolute_error(predictions,y.values))
+        
+    scores = melbourne_model.evaluate(X.values,y.values,verbose=0)
+#    import pdb;pdb.set_trace()
+    print("%s: %.2f" % (melbourne_model.metrics_names[0], scores))
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--train", help="Perform training", action="store_true")
