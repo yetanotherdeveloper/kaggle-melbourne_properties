@@ -66,7 +66,7 @@ def make_model(num_features):
     melbourne_model.compile(loss="mean_squared_error", optimizer=sgd)
     return melbourne_model
 
-def train(model_name):
+def train(model_name, num_epochs):
     melbourne_data = load_and_preprocess_data('./melb_data.csv')
 
     input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
@@ -81,10 +81,10 @@ def train(model_name):
     #melbourne_model.compile(loss="mean_squared_error", optimizer="adagrad")
     #melbourne_model.compile(loss="mse", optimizer="rmsprop")
 
-    show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=30, verbose=1)
+    show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=num_epochs-10, verbose=1)
     checkpoint = keras.callbacks.ModelCheckpoint(filepath="saved_models/melbourne_model.epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
 
-    history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=40, batch_size=1,callbacks=[show_stopper,checkpoint])
+    history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=num_epochs, batch_size=1,callbacks=[show_stopper,checkpoint])
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title("Loss/cost chart")
@@ -130,9 +130,10 @@ if __name__ == "__main__":
     parser.add_argument("--train", help="Perform training", action="store_true")
     parser.add_argument("--infer", help="Perform evaluation", action="store_true")
     parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="")
+    parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     args = parser.parse_args()
     if args.train == True:    
-        train(args.model)
+        train(args.model,args.num_epochs)
     elif args.infer == True:
         infer(args.model)
     else:

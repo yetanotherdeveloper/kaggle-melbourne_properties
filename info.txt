@@ -17,7 +17,8 @@ University of Central Florida, Orlando, FL 32816-2450, USA
 considering environmental quality of property location
 
 
-
+Next Step:
+ improve, Selu, other optimizers
 
 # 10 epochs
 melbourne_model = keras.models.Sequential()
