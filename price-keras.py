@@ -60,10 +60,10 @@ def make_model(num_features):
     melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
     melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # MAE: 922165
 
-#    sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True) # Does not train, flat loss chart
-    sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9)
-    #sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9)
-    melbourne_model.compile(loss="mean_squared_error", optimizer=sgd)
+    adam = keras.optimizers.Adam() # Does converge slowly 
+    #sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 460326
+    melbourne_model.compile(loss="mean_squared_error", optimizer='rmsprop') # Does converge slowly
+    melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
 
 def train(model_name, num_epochs):
@@ -74,8 +74,15 @@ def train(model_name, num_epochs):
     X = melbourne_data[input_features]
     y = melbourne_data.Price
 
-    #melbourne_model.add(keras.layers.Dense(1, activation='relu',input_dim=len(input_features))) # MAE: 1072223
-    melbourne_model = make_model(len(input_features))
+    initial_epoch = 1
+    if model_name == "": 
+        melbourne_model = make_model(len(input_features))
+    else:
+        tmpstr = model_name[:model_name.find("-val_loss")]
+        initial_epoch = int(tmpstr[tmpstr.rfind("-")+1:])
+        melbourne_model = keras.models.load_model(model_name)
+
+    num_epochs += initial_epoch - 1
 
     # TODO: Add some metric
     #melbourne_model.compile(loss="mean_squared_error", optimizer="adagrad")
@@ -84,7 +91,7 @@ def train(model_name, num_epochs):
     show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=num_epochs-10, verbose=1)
     checkpoint = keras.callbacks.ModelCheckpoint(filepath="saved_models/melbourne_model.epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
 
-    history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=num_epochs, batch_size=1,callbacks=[show_stopper,checkpoint])
+    history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=num_epochs, initial_epoch=initial_epoch, batch_size=1,callbacks=[show_stopper,checkpoint])
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title("Loss/cost chart")
