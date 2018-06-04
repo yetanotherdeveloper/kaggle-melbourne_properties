@@ -62,7 +62,7 @@ def make_model(num_features):
 
     adam = keras.optimizers.Adam() # Does converge slowly 
     #sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 460326
-    melbourne_model.compile(loss="mean_squared_error", optimizer='rmsprop') # Does converge slowly
+ #   melbourne_model.compile(loss="mean_squared_error", optimizer='rmsprop') # Does converge slowly
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
 
