@@ -52,19 +52,34 @@ def load_and_preprocess_data(melbourne_file_path):
         datas.values[i] = int(splits[0]) + int(splits[1])*32 + int(splits[2])*32*12
     return melbourne_data
 
-def make_model(num_features):
+def make_model(model_name,num_features):
     # Building model: 
-    # TODO: Add Selu + Alpha dropout
-    melbourne_model = keras.models.Sequential()
+    adam = keras.optimizers.Adam() # Does converge slowly 
+    melbourne_model = keras.models.Sequential(name="-"+model_name + "-Adam")
     melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=num_features))
     melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
     melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # MAE: 922165
 
-    adam = keras.optimizers.Adam() # Does converge slowly 
     #sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 460326
  #   melbourne_model.compile(loss="mean_squared_error", optimizer='rmsprop') # Does converge slowly
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
+
+
+def make_selu_model(model_name,num_features):
+    melbourne_model = keras.models.Sequential(name="-"+model_name+"-SGD")
+    melbourne_model.add(keras.layers.Dense(20, kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
+        activation='selu',input_dim=num_features))
+    melbourne_model.add(keras.layers.Dense(20, kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
+        activation='selu'))
+    melbourne_model.add(keras.layers.Dense(1, kernel_initializer='lecun_normal', bias_initializer='lecun_normal',
+        activation='selu'))   # MAE: 
+
+    #adam = keras.optimizers.Adam() # Does converge slowly 
+    sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 
+    melbourne_model.compile(loss="mean_squared_error", optimizer=sgd) # Does converge slowly
+    return melbourne_model
+
 
 def train(model_name, num_epochs):
     melbourne_data = load_and_preprocess_data('./melb_data.csv')
@@ -75,21 +90,22 @@ def train(model_name, num_epochs):
     y = melbourne_data.Price
 
     initial_epoch = 1
-    if model_name == "": 
-        melbourne_model = make_model(len(input_features))
+    if model_name == "" or model_name == "FCR": 
+        model_name = "FCR"
+        melbourne_model = make_model(model_name,len(input_features))
+    elif model_name == "FCS":
+        melbourne_model = make_selu_model(model_name,len(input_features))
     else:
         tmpstr = model_name[:model_name.find("-val_loss")]
         initial_epoch = int(tmpstr[tmpstr.rfind("-")+1:])
         melbourne_model = keras.models.load_model(model_name)
-
     num_epochs += initial_epoch - 1
 
-    # TODO: Add some metric
-    #melbourne_model.compile(loss="mean_squared_error", optimizer="adagrad")
-    #melbourne_model.compile(loss="mse", optimizer="rmsprop")
-
+    # TODO: Get name of model from compiled model and make
+    # name of file to save to based on that
+    # TODO: normalize input 
     show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=num_epochs-10, verbose=1)
-    checkpoint = keras.callbacks.ModelCheckpoint(filepath="saved_models/melbourne_model.epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
+    checkpoint = keras.callbacks.ModelCheckpoint(filepath="saved_models/melbourne_model"+melbourne_model.name+".epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
 
     history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=num_epochs, initial_epoch=initial_epoch, batch_size=1,callbacks=[show_stopper,checkpoint])
     plt.plot(history.history['loss'])
