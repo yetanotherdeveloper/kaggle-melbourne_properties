@@ -53,3 +53,9 @@ melbourne_model = keras.models.Sequential()
 melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=len(input_features)))
 melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
 melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # 'MAE:', 1060400
+===========================================
+- reproducing : House price prediction : hedonic price model vs artificial neural network
+
+Next Step:
+1) Setup my program on xeon
+2) reproduce results

@@ -8,6 +8,7 @@ from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
 import argparse
 
 def load_and_preprocess_data(melbourne_file_path):
@@ -65,7 +66,7 @@ def make_model(model_name,num_features):
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
 
-
+# TODO: figure out how to initialize bias for SNN
 def make_selu_model(model_name,num_features):
     melbourne_model = keras.models.Sequential(name="-"+model_name+"-SGD")
     melbourne_model.add(keras.layers.Dense(20, kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
@@ -76,10 +77,17 @@ def make_selu_model(model_name,num_features):
         activation='selu'))   # MAE: 
 
     #adam = keras.optimizers.Adam() # Does converge slowly 
-    sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 
+    sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9) # MAE: 
     melbourne_model.compile(loss="mean_squared_error", optimizer=sgd) # Does converge slowly
     return melbourne_model
 
+def normalize_input(data,features):
+    """ Modify data so it is zero meaned """
+    # Get all data from selected columns across samples
+    # TODO: remove warnings
+    for col in features:
+        scaler = StandardScaler().fit(data[col])
+        data[col] = scaler.transform(data[col])
 
 def train(model_name, num_epochs):
     melbourne_data = load_and_preprocess_data('./melb_data.csv')
@@ -90,10 +98,11 @@ def train(model_name, num_epochs):
     y = melbourne_data.Price
 
     initial_epoch = 1
-    if model_name == "" or model_name == "FCR": 
-        model_name = "FCR"
+    if model_name == "" or model_name == "FFN": 
+        model_name = "FFN"
         melbourne_model = make_model(model_name,len(input_features))
-    elif model_name == "FCS":
+    elif model_name == "SNN":
+        normalize_input(X,input_features)
         melbourne_model = make_selu_model(model_name,len(input_features))
     else:
         tmpstr = model_name[:model_name.find("-val_loss")]
