@@ -57,13 +57,25 @@ def make_model(model_name,num_features):
     # Building model: 
     adam = keras.optimizers.Adam() # Does converge slowly 
     melbourne_model = keras.models.Sequential(name="-"+model_name + "-Adam")
+    
     melbourne_model.add(keras.layers.Dense(20, activation='tanh',input_dim=num_features))
     melbourne_model.add(keras.layers.Dense(20, activation='tanh'))
-    melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # MAE: 922165
+    melbourne_model.add(keras.layers.Dense(1, activation='relu', kernel_initializer='he_normal'))   # MAE: 922165
 
     #sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 460326
  #   melbourne_model.compile(loss="mean_squared_error", optimizer='rmsprop') # Does converge slowly
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
+    return melbourne_model
+
+def make_relu_model(model_name,num_features):
+    # Building model: 
+    adam = keras.optimizers.Adam() # Does converge slowly 
+    melbourne_model = keras.models.Sequential(name="-"+model_name + "-Adam")
+    
+    melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal', input_dim=num_features))
+    melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal'))
+    melbourne_model.add(keras.layers.Dense(1, activation='relu', kernel_initializer='he_normal'))   # MAE: 922165
+    melbourne_model.compile(loss="mean_squared_error", optimizer=adam)
     return melbourne_model
 
 # TODO: figure out how to initialize bias for SNN
@@ -100,7 +112,7 @@ def train(model_name, num_epochs):
     initial_epoch = 1
     if model_name == "" or model_name == "FFN": 
         model_name = "FFN"
-        melbourne_model = make_model(model_name,len(input_features))
+        melbourne_model = make_relu_model(model_name,len(input_features))
     elif model_name == "SNN":
         normalize_input(X,input_features)
         melbourne_model = make_selu_model(model_name,len(input_features))
@@ -129,7 +141,6 @@ def train(model_name, num_epochs):
 
     print("MAE:",mean_absolute_error(predictions,y.values))
 
-#import pdb; pdb.set_trace()
 # The Melbourne data has somemissing values (some houses for which some variables weren't recorded.)
 # We'll learn to handle missing values in a later tutorial.  
 # Your Iowa data doesn't have missing values in the predictors you use. 
@@ -148,7 +159,7 @@ def infer(model_name):
     y = melbourne_data.Price
 
     #melbourne_model.add(keras.layers.Dense(1, activation='relu',input_dim=len(input_features))) # MAE: 1072223
-    melbourne_model = make_model(len(input_features))
+    melbourne_model = make_relu_model(model_name,len(input_features))
     melbourne_model.load_weights(model_name)
     predictions = melbourne_model.predict(X.values)
     print("MAE:",mean_absolute_error(predictions,y.values))
