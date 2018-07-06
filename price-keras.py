@@ -1,5 +1,6 @@
 #!/usr/bin/python
-
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
 from tensorflow.contrib import keras
@@ -131,6 +132,7 @@ def train(model_name, num_epochs, X, y):
     plt.ylabel("Loss")
     plt.legend(["train","val"],loc="upper right")
     plt.show()
+    plt.savefig("melbourne_model"+melbourne_model.name+"-epochs-"+str(num_epochs))
     print("Making predictions for following houses")
     predictions = melbourne_model.predict(X.values)
 
