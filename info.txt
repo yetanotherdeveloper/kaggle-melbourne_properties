@@ -57,9 +57,6 @@ melbourne_model.add(keras.layers.Dense(1, activation='relu'))   # 'MAE:', 106040
 ===========================================
 - reproducing : House price prediction : hedonic price model vs artificial neural network
 
-Next Step:
-1) Check add kernel_initializers
-2) reproduce results
 
 
 
@@ -69,6 +66,11 @@ Next Step:
 
     input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
 
+Train : Val 80:20
+
+Infer on best weights
+('MAE:', 22.866146001452549)
+loss: 1636.33
 -------------------------------------------------------
 20 input neurons , 20 hidden , 1 final. Tanh, tanh, relu
 Poor convergence .. Adam optimizer
@@ -77,3 +79,10 @@ Poor convergence .. Adam optimizer
 
 ==================================================
 SNN
+
+
+
+
+Next Step:
+1) make it working on train and test. and prepare for kaggle submission
+2) reproduce results

@@ -14,7 +14,6 @@ import argparse
 def load_and_preprocess_data(melbourne_file_path):
     melbourne_data = pd.read_csv(melbourne_file_path)
     melbourne_data = melbourne_data.dropna(axis=0)
-
     # Replace string values of CouncilArea with onehott representation
     council = melbourne_data['CouncilArea']
     integer_encoding = LabelEncoder().fit_transform(council)
@@ -74,7 +73,7 @@ def make_relu_model(model_name,num_features):
     
     melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal', input_dim=num_features))
     melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal'))
-    melbourne_model.add(keras.layers.Dense(1, activation='relu', kernel_initializer='he_normal'))   # MAE: 922165
+    melbourne_model.add(keras.layers.Dense(1, activation='relu', kernel_initializer='he_normal'))
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam)
     return melbourne_model
 
@@ -101,13 +100,9 @@ def normalize_input(data,features):
         scaler = StandardScaler().fit(data[col])
         data[col] = scaler.transform(data[col])
 
-def train(model_name, num_epochs):
+def train(model_name, num_epochs, X, y):
     melbourne_data = load_and_preprocess_data('./melb_data.csv')
-
-    input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
-    #input_features = ['Bathroom','Bedroom2','BuildingArea','Car','Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Postcode', 'Price', 'Propertycount', 'Rooms' ]
-    X = melbourne_data[input_features]
-    y = melbourne_data.Price
+    #melbourne_data = load_and_preprocess_data('./train.csv')
 
     initial_epoch = 1
     if model_name == "" or model_name == "FFN": 
@@ -147,16 +142,11 @@ def train(model_name, num_epochs):
 # So we will take the simplest option for now, and drop those houses from our data. 
 #Don't worry about this much for now, though the code is:
 
-def infer(model_name):
+def infer(model_name, X, y):
     if model_name == "":
         print("Error: Inference mode require model given with --model option")
         exit(-1)
-    melbourne_data = load_and_preprocess_data('./melb_data.csv')
 
-    input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
-    #input_features = ['Bathroom','Bedroom2','BuildingArea','Car','Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Postcode', 'Price', 'Propertycount', 'Rooms' ]
-    X = melbourne_data[input_features]
-    y = melbourne_data.Price
 
     #melbourne_model.add(keras.layers.Dense(1, activation='relu',input_dim=len(input_features))) # MAE: 1072223
     melbourne_model = make_relu_model(model_name,len(input_features))
@@ -175,10 +165,16 @@ if __name__ == "__main__":
     parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     args = parser.parse_args()
+
+    melbourne_data = load_and_preprocess_data('./melb_data.csv')
+    input_features = ['Address','Bathroom','Bedroom2','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
+    #input_features = ['Bathroom','Bedroom2','BuildingArea','Car','Distance', 'Landsize', 'Lattitude', 'Longtitude', 'Postcode', 'Price', 'Propertycount', 'Rooms' ]
+    trainX, testX, trainY, testY = train_test_split(melbourne_data[input_features],melbourne_data.Price)
+
     if args.train == True:    
-        train(args.model,args.num_epochs)
+        train(args.model,args.num_epochs,trainX, trainY)
     elif args.infer == True:
-        infer(args.model)
+        infer(args.model, testX, testY)
     else:
         print("Error: Please specify either train of infer commandline option")
         exit(1)
