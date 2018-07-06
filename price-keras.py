@@ -11,6 +11,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 import argparse
+import os
 
 def load_and_preprocess_data(melbourne_file_path):
     melbourne_data = pd.read_csv(melbourne_file_path)
@@ -53,6 +54,20 @@ def load_and_preprocess_data(melbourne_file_path):
         datas.values[i] = int(splits[0]) + int(splits[1])*32 + int(splits[2])*32*12
     return melbourne_data
 
+
+def parse_desc(model_desc):
+    ''' Parse desc of model. Format is num of units in first layer, num of units in next layer..
+        num of unit is last layer(has to be one)'''
+    desc = []
+    splitted = model_desc.split(',')
+    for item in splitted:
+        desc.append(int(item))
+    if desc[len(desc)-1] != 1:
+      print("Error: final layer should have one unit!")
+      exit(-1)
+    return desc
+
+
 def make_model(model_name,num_features):
     # Building model: 
     adam = keras.optimizers.Adam() # Does converge slowly 
@@ -67,30 +82,52 @@ def make_model(model_name,num_features):
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
 
-def make_relu_model(model_name,num_features):
+def make_relu_model(model_name,model_desc,num_features):
+
+    # Prase description of model
+    desc = parse_desc(model_desc)
+
     # Building model: 
     adam = keras.optimizers.Adam() # Does converge slowly 
     melbourne_model = keras.models.Sequential(name="-"+model_name + "-Adam")
     
-    melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal', input_dim=num_features))
-    melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal'))
-    melbourne_model.add(keras.layers.Dense(1, activation='relu', kernel_initializer='he_normal'))
+    desc_str = "Relu model: "
+    for i in range(0,len(desc)):
+        if i == 0:
+            melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal', input_dim=num_features))
+            desc_str += str(desc[i])
+        else:
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='relu', kernel_initializer='he_normal'))
+            desc_str += "-"+str(desc[i])
+
+    print(desc_str)
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam)
     return melbourne_model
 
 # TODO: figure out how to initialize bias for SNN
-def make_selu_model(model_name,num_features):
-    melbourne_model = keras.models.Sequential(name="-"+model_name+"-SGD")
-    melbourne_model.add(keras.layers.Dense(20, kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
-        activation='selu',input_dim=num_features))
-    melbourne_model.add(keras.layers.Dense(20, kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
-        activation='selu'))
-    melbourne_model.add(keras.layers.Dense(1, kernel_initializer='lecun_normal', bias_initializer='lecun_normal',
-        activation='selu'))   # MAE: 
+def make_selu_model(model_name,model_desc,num_features):
 
-    #adam = keras.optimizers.Adam() # Does converge slowly 
-    sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9) # MAE: 
-    melbourne_model.compile(loss="mean_squared_error", optimizer=sgd) # Does converge slowly
+    # Prase description of model
+    desc = parse_desc(model_desc)
+
+    desc_str = "SNN model: "
+    melbourne_model = keras.models.Sequential(name="-"+model_name+"-Adam")
+
+    for i in range(0,len(desc)):
+        if i == 0:
+            melbourne_model.add(keras.layers.Dense(20, kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
+                activation='selu',input_dim=num_features))
+            desc_str += str(desc[i])
+        else:
+            melbourne_model.add(keras.layers.Dense(1, kernel_initializer='lecun_normal', bias_initializer='lecun_normal',
+                activation='selu'))   # MAE: 
+            desc_str += "-"+str(desc[i])
+
+    print(desc_str)
+
+    adam = keras.optimizers.Adam() # Does converge slowly 
+    #sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9) # MAE: 
+    melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
 
 def normalize_input(data,features):
@@ -101,17 +138,17 @@ def normalize_input(data,features):
         scaler = StandardScaler().fit(data[col])
         data[col] = scaler.transform(data[col])
 
-def train(model_name, num_epochs, X, y):
+def train(model_name, model_desc, num_epochs, X, y):
     melbourne_data = load_and_preprocess_data('./melb_data.csv')
     #melbourne_data = load_and_preprocess_data('./train.csv')
 
     initial_epoch = 1
     if model_name == "" or model_name == "FFN": 
         model_name = "FFN"
-        melbourne_model = make_relu_model(model_name,len(input_features))
+        melbourne_model = make_relu_model(model_name,model_desc,len(input_features))
     elif model_name == "SNN":
         normalize_input(X,input_features)
-        melbourne_model = make_selu_model(model_name,len(input_features))
+        melbourne_model = make_selu_model(model_name,model_desc,len(input_features))
     else:
         tmpstr = model_name[:model_name.find("-val_loss")]
         initial_epoch = int(tmpstr[tmpstr.rfind("-")+1:])
@@ -120,9 +157,10 @@ def train(model_name, num_epochs, X, y):
 
     # TODO: Get name of model from compiled model and make
     # name of file to save to based on that
-    # TODO: normalize input 
+    output = model_name + "_" + model_desc + "-num_epochs-" + str(num_epochs)
+    os.mkdir(output)
     show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=num_epochs-10, verbose=1)
-    checkpoint = keras.callbacks.ModelCheckpoint(filepath="saved_models/melbourne_model"+melbourne_model.name+".epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
+    checkpoint = keras.callbacks.ModelCheckpoint(filepath=output+"/melbourne_model"+melbourne_model.name+".epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
 
     history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=num_epochs, initial_epoch=initial_epoch, batch_size=1,callbacks=[show_stopper,checkpoint])
     plt.plot(history.history['loss'])
@@ -132,7 +170,7 @@ def train(model_name, num_epochs, X, y):
     plt.ylabel("Loss")
     plt.legend(["train","val"],loc="upper right")
     plt.show()
-    plt.savefig("melbourne_model"+melbourne_model.name+"-epochs-"+str(num_epochs))
+    plt.savefig(output+"/melbourne_model"+melbourne_model.name+"-epochs-"+str(num_epochs))
     print("Making predictions for following houses")
     predictions = melbourne_model.predict(X.values)
 
@@ -164,7 +202,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--train", help="Perform training", action="store_true")
     parser.add_argument("--infer", help="Perform evaluation", action="store_true")
-    parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="")
+    parser.add_argument("--type", help="Type of Model to be used for training/inference", type=str, default="")
+    parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="20,20,1")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     args = parser.parse_args()
 
@@ -174,7 +213,7 @@ if __name__ == "__main__":
     trainX, testX, trainY, testY = train_test_split(melbourne_data[input_features],melbourne_data.Price)
 
     if args.train == True:    
-        train(args.model,args.num_epochs,trainX, trainY)
+        train(args.type,args.model,args.num_epochs,trainX, trainY)
     elif args.infer == True:
         infer(args.model, testX, testY)
     else:
