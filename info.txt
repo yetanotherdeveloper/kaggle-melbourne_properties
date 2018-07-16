@@ -86,3 +86,30 @@ SNN
 Next Step:
 1) make it working on train and test. and prepare for kaggle submission
 2) reproduce results
+3) How to make infer on test be automatically dumped into directory of training output?
+4) Data is not complete. Drop data from 'Alley' collumn . Write an article chapter
+5) Make some filling of data
+
+
+
+==============================================
+Data cleaning:
+
+Car - number of car parking places. sometimes NAN. thesis is that if no paring spots then not always info is put. Also
+value of zero among proper values is less common that non-zero values. so we replace NAN with 0.
+
+
+Bathroom - number of Bathrooms. If NAN then I assume 1. If someone got more than it is more likely to underline that fact.
+
+CoucilArea -- Tried to guess from adress, but was to bug prone sso decided to put unknown
+
+Bedroom2 -- number of beedrooms. IT seems to be subset of Rooms. So I will remove that columns
+
+Latitude/longtitude -- IT would be beneficial to have that one. But will be droped do to 20% of missing data. We could consider guessing based on address eg. find property on same street and same suburb etc. It would be difficult
+
+Regionname -- will try to recreate one.. based on address, suburb. First I check from same suburb and returns REgionname if possible.
+If not avaialbe properties from same suburb then I return first property from same street 
+
+Price -- missing, then dropped data rows that got NAN in that column. Drop after other cleaning ops were made
+
+Make buildingarea
