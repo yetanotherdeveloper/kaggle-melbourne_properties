@@ -61,6 +61,35 @@ def fill_property_count_up(data):
             data['Propertycount'][i] = guess_property_count(data,data['Suburb'][i]) 
     return
 
+
+def guess_distance(data, target_suburb):
+    ref = data['Distance'].isnull()
+    sum_distance = 0.0
+    sum_counter = 0.0
+    for i in range(0,len(data)):
+         if ref[i] == False and data['Suburb'][i] == target_suburb:
+            sum_distance += data['Distance'][i]
+            sum_counter += 1.0
+    if sum_counter == 0:
+        sum_counter = 1.0
+    return sum_distance/sum_counter
+
+
+def fill_distance_up(data):
+    """ Distance to C.B.D taken as an averge distance from other properties in
+        the same suburb located on the same street. If no properties on the same street
+        then averge distance in the same suburb"""
+    ref = data['Distance'].isnull()
+    to_drop = []
+    for i in range(0,len(ref)):
+        if ref[i] == True:
+            data['Distance'][i] = guess_distance(data,data['Suburb'][i]) 
+            # If in ths suburb there is only one property with borken data
+            # then delete this entry
+            if data['Distance'][i] == 0:
+                to_drop.append(i)
+    return data.drop(to_drop)
+    
 def load_and_preprocess_data(melbourne_file_path):
     melbourne_data = pd.read_csv(melbourne_file_path)
     print(melbourne_data.isnull().sum()) # This is printing missing data
@@ -74,6 +103,8 @@ def load_and_preprocess_data(melbourne_file_path):
     fill_region_name_up(melbourne_data)
     # Try to fill the missing PropertyCount (properites count in suburb)
     fill_property_count_up(melbourne_data)
+    # Distance to C.B.D to be made up based on street+suburb info
+    melbourne_data = fill_distance_up(melbourne_data)
 
     melbourne_data = melbourne_data.dropna(axis=0, subset = ['Price'])  # Drop data that contains NAN in Price column
     print(melbourne_data.isnull().sum()) # This is printing missing data
