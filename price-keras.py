@@ -90,6 +90,30 @@ def fill_distance_up(data):
                 to_drop.append(i)
     return data.drop(to_drop)
     
+
+def guess_yearbuilt(data, target_suburb, target_type):
+    ref = data['YearBuilt'].isnull()
+    sum_yearbuilt = 0.0
+    sum_counter = 0.0
+    for i in range(0,len(data)):
+         if (ref[i] == False) and (data['Suburb'][i] == target_suburb) and (data['Type'][i] == target_type):
+            sum_yearbuilt += data['YearBuilt'][i]
+            sum_counter += 1.0
+    if sum_counter == 0:
+        sum_counter = 1.0
+    return sum_yearbuilt/sum_counter
+
+
+def fill_yearbuilt_up(data):
+    """ If year build is missing find same type property from same suburb and takes its year 
+    provided it is no fresher that Date of transaction"""
+    ref = data['YearBuilt'].isnull()
+    for i in range(0,len(ref)):
+        if ref[i] == True:
+            data['YearBuilt'][i] = guess_yearbuilt(data,data['Suburb'][i],data['Type'][i])
+            print("Type: %s Suburb: %s Guessed year: %d" %(data['Type'][i],data['Suburb'][i],data['YearBuilt'][i]))
+    return 
+
 def load_and_preprocess_data(melbourne_file_path):
     melbourne_data = pd.read_csv(melbourne_file_path)
     print(melbourne_data.isnull().sum()) # This is printing missing data
@@ -103,6 +127,8 @@ def load_and_preprocess_data(melbourne_file_path):
     fill_region_name_up(melbourne_data)
     # Try to fill the missing PropertyCount (properites count in suburb)
     fill_property_count_up(melbourne_data)
+    # Try to guess/even out YearBuild
+    melbourne_data['YearBuilt'].fillna(0,inplace=True)
     # Distance to C.B.D to be made up based on street+suburb info
     melbourne_data = fill_distance_up(melbourne_data)
 

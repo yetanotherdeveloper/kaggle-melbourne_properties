@@ -112,4 +112,9 @@ If not avaialbe properties from same suburb then I return first property from sa
 
 Price -- missing, then dropped data rows that got NAN in that column. Drop after other cleaning ops were made
 
-Make buildingarea
+Distance to CBD was taken as an averge distance to CBD in given suburb. Or 
+
+Year recreation - type of building if possile in the same suburb what age and average age. I wil try with 0 value howpfully NN will
+ignore that info for NAN cases
+
+Make buildingarea and LandSize
