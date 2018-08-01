@@ -114,6 +114,80 @@ def fill_yearbuilt_up(data):
             print("Type: %s Suburb: %s Guessed year: %d" %(data['Type'][i],data['Suburb'][i],data['YearBuilt'][i]))
     return 
 
+def guess_value_by_interpolation(ref,data,target_suburb,target_type,target_key,target_val, gap_key, properties_stats):
+    if target_val == pd.np.nan or target_val == 0:
+        return 0
+    neighbour_less_stats = properties_stats[(properties_stats['Suburb'] == target_suburb) &
+            (properties_stats[target_key] <= target_val)]
+    neighbour_greater_stats = properties_stats[(properties_stats['Suburb'] == target_suburb) &
+            (properties_stats[target_key] > target_val)]
+    if len(neighbour_less_stats) != 0 and len(neighbour_greater_stats) != 0:
+        min_index = neighbour_less_stats[target_key].argmax()
+        max_index = neighbour_greater_stats[target_key].argmin()
+        delta_y = neighbour_greater_stats[gap_key][max_index] - neighbour_less_stats[gap_key][min_index] 
+        delta_x = neighbour_greater_stats[target_key][max_index] - neighbour_less_stats[target_key][min_index] 
+        estimate = (target_val - neighbour_less_stats[target_key][min_index]) * delta_y/delta_x + neighbour_less_stats[gap_key][min_index]
+    elif len(neighbour_less_stats) != 0:
+        min_index = neighbour_less_stats[target_key].argmax()
+        estimate = neighbour_less_stats[gap_key][min_index]
+    elif len(neighbour_greater_stats) !=0:
+        max_index = neighbour_greater_stats[target_key].argmin()
+        estimate = neighbour_greater_stats[gap_key][max_index]
+    else:
+        estimate = 0
+    return estimate 
+
+def fill_buildingarea_up(data):
+    """ Estimate BuildingArea based on type of property and LandSize is available """
+
+    ref = data['BuildingArea'].isnull()
+    # Make a hash table ['type' : data]
+    properties_stats = {}
+    properties_stats['h'] = data[(data['Type'] == "h") & (data['Landsize'].notnull())
+            & (data['BuildingArea'].notnull())]
+    properties_stats['t'] = data[(data['Type'] == "t") & (data['Landsize'].notnull())
+            & (data['BuildingArea'].notnull())]
+    properties_stats['br'] = data[(data['Type'] == "br") & (data['Landsize'].notnull())
+            & (data['BuildingArea'].notnull())]
+    properties_stats['u'] = data[(data['Type'] == "u") & (data['Landsize'].notnull())
+            & (data['BuildingArea'].notnull())]
+    properties_stats['dev site'] = data[(data['Type'] == "dev site") & (data['Landsize'].notnull())
+            & (data['BuildingArea'].notnull())]
+    properties_stats['o res'] = data[(data['Type'] == "o res") & (data['Landsize'].notnull())
+            & (data['BuildingArea'].notnull())]
+    
+    for i in range(0,len(ref)):
+        if ref[i] == True:
+            data['BuildingArea'][i] = guess_value_by_interpolation(ref,data,data['Suburb'][i],data['Type'][i],
+                    'Landsize',data['Landsize'][i], 'BuildingArea', properties_stats[data['Type'][i]])
+    return data
+
+
+def fill_landsize_up(data):
+    """ Estimate LAndsize based on type of property and BuildingArea if available """
+
+    ref = data['Landsize'].isnull()
+    # Make a hash table ['type' : data]
+    properties_stats = {}
+    properties_stats['h'] = data[(data['Type'] == "h") & (data['BuildingArea'].notnull())
+            & (data['Landsize'].notnull())]
+    properties_stats['t'] = data[(data['Type'] == "t") & (data['BuildingArea'].notnull())
+            & (data['Landsize'].notnull())]
+    properties_stats['br'] = data[(data['Type'] == "br") & (data['BuildingArea'].notnull())
+            & (data['Landsize'].notnull())]
+    properties_stats['u'] = data[(data['Type'] == "u") & (data['BuildingArea'].notnull())
+            & (data['Landsize'].notnull())]
+    properties_stats['dev site'] = data[(data['Type'] == "dev site") & (data['BuildingArea'].notnull())
+            & (data['Landsize'].notnull())]
+    properties_stats['o res'] = data[(data['Type'] == "o res") & (data['BuildingArea'].notnull())
+            & (data['Landsize'].notnull())]
+
+    for i in range(0,len(ref)):
+        if ref[i] == True:  # guess building area
+            data['Landsize'][i] = guess_value_by_interpolation(ref,data,data['Suburb'][i],data['Type'][i],
+                    'BuildingArea',data['BuildingArea'][i], 'Landsize', properties_stats[data['Type'][i]])
+    return data
+
 def load_and_preprocess_data(melbourne_file_path):
     melbourne_data = pd.read_csv(melbourne_file_path)
     print(melbourne_data.isnull().sum()) # This is printing missing data
@@ -129,6 +203,11 @@ def load_and_preprocess_data(melbourne_file_path):
     fill_property_count_up(melbourne_data)
     # Try to guess/even out YearBuild
     melbourne_data['YearBuilt'].fillna(0,inplace=True)
+    # Building Area estimation 
+    melbourne_data = fill_buildingarea_up(melbourne_data)
+    # Landsize estimation
+    melbourne_data = fill_landsize_up(melbourne_data)
+
     # Distance to C.B.D to be made up based on street+suburb info
     melbourne_data = fill_distance_up(melbourne_data)
 
@@ -342,7 +421,3 @@ if __name__ == "__main__":
     else:
         print("Error: Please specify either train of infer commandline option")
         exit(1)
-
-
-
-

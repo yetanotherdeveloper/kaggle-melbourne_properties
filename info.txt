@@ -117,4 +117,16 @@ Distance to CBD was taken as an averge distance to CBD in given suburb. Or
 Year recreation - type of building if possile in the same suburb what age and average age. I wil try with 0 value howpfully NN will
 ignore that info for NAN cases
 
-Make buildingarea and LandSize
+Building area -- Make up info based on existing LandSize. If either one or another does exists then we could get average of BuildingArea given house type and LandSize within suburb
+
+Make buildingarea 
+Failed at 29483 index
+NAN at 17th
+Try in calculation avoid zeros. zero/zero is NAN
+Get interpolated value based on surrounding values of missing one (eg. Landsize )
+
+
+Make Landsize
+Same idea as in building area
+
+Ok, data cleaned , time for experiments
