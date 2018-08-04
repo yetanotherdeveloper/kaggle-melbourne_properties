@@ -213,7 +213,9 @@ def load_and_preprocess_data(melbourne_file_path):
 
     melbourne_data = melbourne_data.dropna(axis=0, subset = ['Price'])  # Drop data that contains NAN in Price column
     print(melbourne_data.isnull().sum()) # This is printing missing data
-    melbourne_data = melbourne_data.dropna(axis=0)
+    if args.preprocess_only == True:
+        melbourne_data.to_csv(args.dataset[5:].strip('.csv')+"_preprocessed.csv")
+        return melbourne_data
     ref = melbourne_data.tail().to_dict()
     # Replace string values of CouncilArea with onehott representation
     string2integer(ref,melbourne_data,'CouncilArea')
@@ -400,21 +402,24 @@ def infer(model_name, X, y):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--train", help="Perform training", action="store_true")
+    parser.add_argument("--preprocess_only", help="Perform data cleaning and store results in a file", action="store_true")
     parser.add_argument("--infer", help="Perform evaluation", action="store_true")
     parser.add_argument("--type", help="Type of Model to be used for training/inference", type=str, default="")
     parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="20,20,1")
-    parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="melb")
+    parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="melb:Melbourne_housing_FULL.csv")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     args = parser.parse_args()
 
-    if args.dataset == 'melb':
-        trainX, testX, trainY, testY = prepare_melbourne_dataset('./Melbourne_housing_FULL.csv')
+    if args.dataset[0:4] == 'melb':
+        trainX, testX, trainY, testY = prepare_melbourne_dataset(args.dataset[5:])
     elif args.dataset == 'comp':
         trainX, testX, trainY, testY = prepare_competition_dataset('./train.csv','./test.csv')
     else:
         printf("Invalid value of dataset. Accepted values: 'comp' and 'melb'");
 
-    if args.train == True:    
+    if args.preprocess_only == True:
+        pass
+    elif args.train == True:
         train(args.type,args.model,args.num_epochs,trainX, trainY)
     elif args.infer == True:
         infer(args.model, testX, testY)
