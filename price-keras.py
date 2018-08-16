@@ -14,7 +14,7 @@ import argparse
 import os
 
 def string2integer(ref,data,key):
-    if ref.has_key(key):
+    if key in ref:
         select = data[key]
         integer_encoding = LabelEncoder().fit_transform(select)
         data[key] = integer_encoding
@@ -230,7 +230,7 @@ def load_and_preprocess_data(melbourne_file_path):
     # enocode Method 
     string2integer(ref,melbourne_data,'Method')
     # preprocess adress, remove apartmetn number , leaving just street
-    if ref.has_key('Address'):
+    if 'Address' in ref:
         address =  melbourne_data['Address']
         for i in range(0,len(address.values)):
             address.values[i] = address.values[i][address.values[i].find(" ")+1:]
@@ -238,7 +238,7 @@ def load_and_preprocess_data(melbourne_file_path):
         melbourne_data['Address'] = integer_encoding
 
     # Day + month*32 + 32*12*year
-    if ref.has_key('Date'):
+    if 'Date' in ref:
         datas = melbourne_data['Date']
         for i in range(0,len(datas.values)):
             splits = datas.values[i].split('/')

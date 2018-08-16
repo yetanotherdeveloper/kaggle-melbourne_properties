@@ -131,3 +131,9 @@ Same idea as in building area
 
 Ok, data cleaned , time for experiments
 
+Add embedding solution
+
+Make experiments
+and type results
+
+python3 porting
