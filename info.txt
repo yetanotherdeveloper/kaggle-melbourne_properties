@@ -137,3 +137,17 @@ Make experiments
 and type results
 
 python3 porting
+
+=== Ok tranfering my program to new data set
+
+test data set does not have saleprice collumn. So we work on traning and
+then make our submission
+
+Data cleaning:
+- making plot showing influence given feture to Saleprice is used concept
+
+Alley -- 90% NAN, NAN means that no alley access 
+LotFrontage -- Chart created not much influence on its own. So I can safely put zero.
+FirePlaceQu -- NA - 0 , Poor - 1 , 
+
+GarageType --

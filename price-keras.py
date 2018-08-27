@@ -188,6 +188,72 @@ def fill_landsize_up(data):
                     'BuildingArea',data['BuildingArea'][i], 'Landsize', properties_stats[data['Type'][i]])
     return data
 
+
+def fill_alley_up(data):
+
+    """ Alley value of NA means no alley access to property 
+    Instead of NA we put 0, and Grvl = 1 , Pave = 2"""
+
+    data['Alley'].fillna(0,inplace=True)
+    data[data.Alley == "Grvl"] = 1
+    data[data.Alley == "Pave"] = 2
+    return
+
+
+def fill_lotfrontage(data):
+
+    data['LotFrontage'].fillna(0,inplace=True)
+
+#    plt.plot(data["LotFrontage"].values,data["SalePrice"].values,'ro')
+#    plt.title("Lot Frontage Influence")
+#    plt.xlabel("Lot Frontage")
+#    plt.ylabel("SoldPrice")
+#    plt.legend(["SoldPrice"],loc="upper right")
+#    plt.show()
+#    plt.savefig("lotfrontage.png")
+
+    return
+
+
+def fill_fireplaceqa_up(data):
+
+    """ Alley value of NA means no alley access to property 
+    Instead of NA we put 0, and Grvl = 1 , Pave = 2"""
+
+    data['FireplaceQu'].fillna(0,inplace=True)
+    data[data.FireplaceQu == "Po"] = 1
+    data[data.FireplaceQu == "Fa"] = 2
+    data[data.FireplaceQu == "TA"] = 3
+    data[data.FireplaceQu == "Gd"] = 4
+    data[data.FireplaceQu == "Ex"] = 5
+    return
+
+
+def load_and_preprocess_comp_data(data_path):
+    data = pd.read_csv(data_path)
+
+    # Based on paper on IOWA dataset and chart GRLivArea/SalePrice
+    # We can see that SalePrice of houses GrLivArea of values above 4000 square feets are strange
+    # paper recommented to remove them so we did
+    data = data[data.GrLivArea <= 4000]
+    
+    #plt.plot(data["GrLivArea"].values,data["SalePrice"].values,'ro')
+    #plt.title("Diagnostic")
+    #plt.xlabel("Garage area")
+    #plt.ylabel("SoldPrice")
+    #plt.legend(["SoldPrice"],loc="upper right")
+    #plt.show()
+    #plt.savefig("diagnostic.png")
+
+    fill_alley_up(data)
+    fill_lotfrontage(data)
+    fill_fireplaceqa_up(data)
+
+    print(data.isnull().sum()) # This is printing missing data
+    if "SalePrice" in data:
+        print(len(data["SalePrice"].values))
+    return data
+
 def load_and_preprocess_data(melbourne_file_path):
     melbourne_data = pd.read_csv(melbourne_file_path)
     print(melbourne_data.isnull().sum()) # This is printing missing data
@@ -251,14 +317,13 @@ def prepare_melbourne_dataset(melbourne_dataset_file):
     input_features = ['Address','Bathroom','BuildingArea','Car','CouncilArea', 'Date', 'Distance', 'Landsize', 'Method', 'Postcode', 'Price', 'Propertycount', 'Regionname', 'Rooms', 'SellerG', 'Suburb', 'Type', 'YearBuilt']
     return train_test_split(melbourne_data[input_features],melbourne_data.Price)
 
-def prepare_competition_dataset(train_data_file, test_data_file):
-    train_data = load_and_preprocess_data(train_data_file)
-    test_data = load_and_preprocess_data(test_data_file)
+def prepare_competition_dataset(data_file):
+    data = load_and_preprocess_comp_data(data_file)
     # Ignored:
-    # Alley -- Almost all NAN
-    input_features = ['MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath', 'Bedroom', 'Kitchen', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageYrBlt', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'MoSold', 'YrSold', 'SaleType', 'SaleCondition']
+    #
+    input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath', 'Bedroom', 'Kitchen', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageYrBlt', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'MoSold', 'YrSold', 'SaleType', 'SaleCondition']
 
-    return train_data,train_data['SalePrice'],test_data,test_data['SalePrice'] 
+    return data,data['SalePrice']
 
 def parse_desc(model_desc):
     ''' Parse desc of model. Format is num of units in first layer, num of units in next layer..
@@ -406,21 +471,21 @@ if __name__ == "__main__":
     parser.add_argument("--infer", help="Perform evaluation", action="store_true")
     parser.add_argument("--type", help="Type of Model to be used for training/inference", type=str, default="")
     parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="20,20,1")
-    parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="melb:Melbourne_housing_FULL.csv")
+    parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="comp:train.csv")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     args = parser.parse_args()
 
     if args.dataset[0:4] == 'melb':
         trainX, testX, trainY, testY = prepare_melbourne_dataset(args.dataset[5:])
-    elif args.dataset == 'comp':
-        trainX, testX, trainY, testY = prepare_competition_dataset('./train.csv','./test.csv')
+    elif args.dataset[0:4] == 'comp':
+        dataX, dataY  = prepare_competition_dataset(args.dataset[5:])
     else:
-        printf("Invalid value of dataset. Accepted values: 'comp' and 'melb'");
+        print("Invalid value of dataset. Accepted values: 'comp' and 'melb'");
 
     if args.preprocess_only == True:
         pass
     elif args.train == True:
-        train(args.type,args.model,args.num_epochs,trainX, trainY)
+        train(args.type,args.model,args.num_epochs, dataX, dataY)
     elif args.infer == True:
         infer(args.model, testX, testY)
     else:
