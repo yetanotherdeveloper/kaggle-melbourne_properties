@@ -150,4 +150,7 @@ Alley -- 90% NAN, NAN means that no alley access
 LotFrontage -- Chart created not much influence on its own. So I can safely put zero.
 FirePlaceQu -- NA - 0 , Poor - 1 , 
 
-GarageType --
+GarageType -- N/A - no garage sop I put 0 here, other types are integers, where 2Types (two types of garage) are maximum values 
+
+GarageYearBuild -- N/A , there was 64 N/A so it is liklely those are the same values when garage is missing. I think I will ignore that value
+

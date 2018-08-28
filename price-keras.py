@@ -229,6 +229,19 @@ def fill_fireplaceqa_up(data):
     return
 
 
+def fill_garagetype_up(data):
+    """ N/A means no garage. Other values are text and will be converted to integers"""
+
+    data['GarageType'].fillna(0,inplace=True)
+    data[data.GarageType == "Detchd"] = 1
+    data[data.GarageType == "CarPort"] = 2
+    data[data.GarageType == "BuiltIn"] = 3
+    data[data.GarageType == "Basment"] = 4
+    data[data.GarageType == "Attchd"] = 5
+    data[data.GarageType == "2Types"] = 6
+
+    return
+
 def load_and_preprocess_comp_data(data_path):
     data = pd.read_csv(data_path)
 
@@ -248,6 +261,7 @@ def load_and_preprocess_comp_data(data_path):
     fill_alley_up(data)
     fill_lotfrontage(data)
     fill_fireplaceqa_up(data)
+    fill_garagetype_up(data)
 
     print(data.isnull().sum()) # This is printing missing data
     if "SalePrice" in data:
