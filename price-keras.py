@@ -229,6 +229,11 @@ def fill_fireplaceqa_up(data):
     return
 
 
+def fill_garageyearbuild_up(data):
+    """ Year when garage was build is to be discarded"""
+    data.drop(['GarageYrBlt'], axis=1, inplace=True )  # Drop column with Garage Year build
+    return 
+
 def fill_garagetype_up(data):
     """ N/A means no garage. Other values are text and will be converted to integers"""
 
@@ -241,6 +246,18 @@ def fill_garagetype_up(data):
     data[data.GarageType == "2Types"] = 6
 
     return
+
+
+def fill_garagefinish_up(data):
+    """ state of interior finish"""
+
+    data['GarageFinish'].fillna(0,inplace=True)
+#    data[data.GarageFinish == "Unf"] = 1
+#    data[data.GarageFinish == "RFn"] = 2
+#    data[data.GarageFinish == "Fin"] = 3
+
+    return
+
 
 def load_and_preprocess_comp_data(data_path):
     data = pd.read_csv(data_path)
@@ -259,9 +276,12 @@ def load_and_preprocess_comp_data(data_path):
     #plt.savefig("diagnostic.png")
 
     fill_alley_up(data)
+    import pdb;pdb.set_trace()
     fill_lotfrontage(data)
     fill_fireplaceqa_up(data)
     fill_garagetype_up(data)
+    fill_garageyearbuild_up(data)
+    fill_garagefinish_up(data)
 
     print(data.isnull().sum()) # This is printing missing data
     if "SalePrice" in data:

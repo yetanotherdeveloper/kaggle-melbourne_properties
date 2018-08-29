@@ -154,3 +154,4 @@ GarageType -- N/A - no garage sop I put 0 here, other types are integers, where 
 
 GarageYearBuild -- N/A , there was 64 N/A so it is liklely those are the same values when garage is missing. I think I will ignore that value
 
+GarageCond and other garage values. seems like all having gaps when no garae is present
