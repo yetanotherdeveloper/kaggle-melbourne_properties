@@ -195,8 +195,8 @@ def fill_alley_up(data):
     Instead of NA we put 0, and Grvl = 1 , Pave = 2"""
 
     data['Alley'].fillna(0,inplace=True)
-    data[data.Alley == "Grvl"] = 1
-    data[data.Alley == "Pave"] = 2
+    data['Alley'].replace("Grvl",1,inplace=True)
+    data['Alley'].replace("Pave",2,inplace=True)
     return
 
 
@@ -221,11 +221,11 @@ def fill_fireplaceqa_up(data):
     Instead of NA we put 0, and Grvl = 1 , Pave = 2"""
 
     data['FireplaceQu'].fillna(0,inplace=True)
-    data[data.FireplaceQu == "Po"] = 1
-    data[data.FireplaceQu == "Fa"] = 2
-    data[data.FireplaceQu == "TA"] = 3
-    data[data.FireplaceQu == "Gd"] = 4
-    data[data.FireplaceQu == "Ex"] = 5
+    data['FireplaceQu'].replace("Po",1,inplace=True)
+    data['FireplaceQu'].replace("Fa",2,inplace=True)
+    data['FireplaceQu'].replace("TA",3,inplace=True)
+    data['FireplaceQu'].replace("Gd",4,inplace=True)
+    data['FireplaceQu'].replace("Ex",5,inplace=True)
     return
 
 
@@ -238,24 +238,164 @@ def fill_garagetype_up(data):
     """ N/A means no garage. Other values are text and will be converted to integers"""
 
     data['GarageType'].fillna(0,inplace=True)
-    data[data.GarageType == "Detchd"] = 1
-    data[data.GarageType == "CarPort"] = 2
-    data[data.GarageType == "BuiltIn"] = 3
-    data[data.GarageType == "Basment"] = 4
-    data[data.GarageType == "Attchd"] = 5
-    data[data.GarageType == "2Types"] = 6
+    data['GarageType'].replace("Detchd",1,inplace=True)
+    data['GarageType'].replace("CarPort",2,inplace=True)
+    data['GarageType'].replace("BuiltIn",3,inplace=True)
+    data['GarageType'].replace("Basment",4,inplace=True)
+    data['GarageType'].replace("Attchd",5,inplace=True)
+    data['GarageType'].replace("2Types",6,inplace=True)
 
     return
+
+
+def fill_garagequal_up(data):
+    data['GarageQual'].fillna(0,inplace=True)
+    data['GarageQual'].replace("Po",1,inplace=True)
+    data['GarageQual'].replace("Fa",2,inplace=True)
+    data['GarageQual'].replace("TA",3,inplace=True)
+    data['GarageQual'].replace("Gd",4,inplace=True)
+    data['GarageQual'].replace("Ex",5,inplace=True)
+
+    return 
+
+
+def fill_garagecond_up(data):
+    data['GarageCond'].fillna(0,inplace=True)
+    data['GarageCond'].replace("Po",1,inplace=True)
+    data['GarageCond'].replace("Fa",2,inplace=True)
+    data['GarageCond'].replace("TA",3,inplace=True)
+    data['GarageCond'].replace("Gd",4,inplace=True)
+    data['GarageCond'].replace("Ex",5,inplace=True)
+
+    return 
 
 
 def fill_garagefinish_up(data):
     """ state of interior finish"""
 
     data['GarageFinish'].fillna(0,inplace=True)
-#    data[data.GarageFinish == "Unf"] = 1
-#    data[data.GarageFinish == "RFn"] = 2
-#    data[data.GarageFinish == "Fin"] = 3
+    data['GarageFinish'].replace("Unf",1,inplace=True)
+    data['GarageFinish'].replace("RFn",2,inplace=True)
+    data['GarageFinish'].replace("Fin",3,inplace=True)
 
+    return
+
+
+def fill_poolqc_up(data):
+    data['PoolQC'].fillna(0,inplace=True)
+    data['PoolQC'].replace("Fa",1,inplace=True)
+    data['PoolQC'].replace("TA",2,inplace=True)
+    data['PoolQC'].replace("Gd",3,inplace=True)
+    data['PoolQC'].replace("Ex",4,inplace=True)
+
+    return 
+
+
+def fill_fence_up(data):
+    data['Fence'].fillna(0,inplace=True)
+    data['Fence'].replace("MnWw",1,inplace=True)
+    data['Fence'].replace("GdWo",2,inplace=True)
+    data['Fence'].replace("MnPrv",3,inplace=True)
+    data['Fence'].replace("GdPrv",4,inplace=True)
+
+    return 
+
+# Consider one hot representation
+def fill_misc_up(data):
+    data['MiscFeature'].fillna(0,inplace=True)
+    data['MiscFeature'].replace("Elev",1,inplace=True)
+    data['MiscFeature'].replace("Gar2",2,inplace=True)
+    data['MiscFeature'].replace("TenC",3,inplace=True)
+    data['MiscFeature'].replace("Shed",4,inplace=True)
+    data['MiscFeature'].replace("Othr",5,inplace=True)
+    return
+
+
+def fill_bsmtqual_up(data):
+
+    data['BsmtQual'].fillna(0,inplace=True)
+    data['BsmtQual'].replace("Po",1,inplace=True)
+    data['BsmtQual'].replace("Fa",2,inplace=True)
+    data['BsmtQual'].replace("TA",3,inplace=True)
+    data['BsmtQual'].replace("Gd",4,inplace=True)
+    data['BsmtQual'].replace("Ex",5,inplace=True)
+    return
+
+
+def fill_bsmtcond_up(data):
+
+    data['BsmtCond'].fillna(0,inplace=True)
+    data['BsmtCond'].replace("Po",1,inplace=True)
+    data['BsmtCond'].replace("Fa",2,inplace=True)
+    data['BsmtCond'].replace("TA",3,inplace=True)
+    data['BsmtCond'].replace("Gd",4,inplace=True)
+    data['BsmtCond'].replace("Ex",5,inplace=True)
+    return
+
+
+def fill_bsmtexposure_up(data):
+
+    data['BsmtExposure'].fillna(0,inplace=True)
+    data['BsmtExposure'].replace("No",1,inplace=True)
+    data['BsmtExposure'].replace("Mn",2,inplace=True)
+    data['BsmtExposure'].replace("Av",3,inplace=True)
+    data['BsmtExposure'].replace("Gd",4,inplace=True)
+    return
+
+
+def fill_bsmtfintype1_up(data):
+
+    data['BsmtFinType1'].fillna(0,inplace=True)
+    data['BsmtFinType1'].replace("Unf",1,inplace=True)
+    data['BsmtFinType1'].replace("LwQ",2,inplace=True)
+    data['BsmtFinType1'].replace("Rec",3,inplace=True)
+    data['BsmtFinType1'].replace("BLQ",4,inplace=True)
+    data['BsmtFinType1'].replace("ALQ",5,inplace=True)
+    data['BsmtFinType1'].replace("GLQ",6,inplace=True)
+    return
+
+
+def fill_bsmtfintype2_up(data):
+
+    data['BsmtFinType2'].fillna(0,inplace=True)
+    data['BsmtFinType2'].replace("Unf",1,inplace=True)
+    data['BsmtFinType2'].replace("LwQ",2,inplace=True)
+    data['BsmtFinType2'].replace("Rec",3,inplace=True)
+    data['BsmtFinType2'].replace("BLQ",4,inplace=True)
+    data['BsmtFinType2'].replace("ALQ",5,inplace=True)
+    data['BsmtFinType2'].replace("GLQ",6,inplace=True)
+    return
+
+
+def fill_electrical_up(data):
+
+    total = len(data['Electrical'].values)
+    total_mix = len(data[data.Electrical == "Mix"].values)
+    total_fusep = len(data[data.Electrical == "FuseP"].values)
+    total_fusef = len(data[data.Electrical == "FuseF"].values)
+    total_fusea = len(data[data.Electrical == "FuseA"].values)
+    total_sbrk = len(data[data.Electrical == "SBrkr"].values)
+
+    # Missing data is a building fairly new , so after
+    # 1960s all have SBRKR type of electrial
+    data['Electrical'].fillna("SBrkr",inplace=True)
+
+    data['Electrical'].replace("Mix",1,inplace=True)
+    data['Electrical'].replace("FuseP",2,inplace=True)
+    data['Electrical'].replace("FuseF",3,inplace=True)
+    data['Electrical'].replace("FuseA",4,inplace=True)
+    data['Electrical'].replace("SBrkr",5,inplace=True)
+
+    # turn into integers and plot to see correlations
+    #candidate = "YearBuilt"
+    #plt.plot(range(0,1456),data["Electrical"].values,'ro')
+    #plt.plot(data[candidate],data["Electrical"].values,'ro')
+    #plt.title("Electrical correlations")
+    #plt.xlabel(candidate)
+    #plt.ylabel("Electrical")
+    #plt.legend(["Electrical"],loc="upper right")
+    #plt.show()
+    #plt.savefig("electrical.png")
     return
 
 
@@ -267,25 +407,26 @@ def load_and_preprocess_comp_data(data_path):
     # paper recommented to remove them so we did
     data = data[data.GrLivArea <= 4000]
     
-    #plt.plot(data["GrLivArea"].values,data["SalePrice"].values,'ro')
-    #plt.title("Diagnostic")
-    #plt.xlabel("Garage area")
-    #plt.ylabel("SoldPrice")
-    #plt.legend(["SoldPrice"],loc="upper right")
-    #plt.show()
-    #plt.savefig("diagnostic.png")
-
     fill_alley_up(data)
-    import pdb;pdb.set_trace()
     fill_lotfrontage(data)
     fill_fireplaceqa_up(data)
     fill_garagetype_up(data)
     fill_garageyearbuild_up(data)
     fill_garagefinish_up(data)
-
-    print(data.isnull().sum()) # This is printing missing data
+    fill_garagequal_up(data)
+    fill_garagecond_up(data)
+    fill_poolqc_up(data)
+    fill_fence_up(data)
+    fill_misc_up(data)
+    fill_bsmtqual_up(data)
+    fill_bsmtcond_up(data)
+    fill_bsmtexposure_up(data)
+    fill_bsmtfintype1_up(data)
+    fill_bsmtfintype2_up(data)
+    fill_electrical_up(data)
     if "SalePrice" in data:
         print(len(data["SalePrice"].values))
+    import pdb;pdb.set_trace()
     return data
 
 def load_and_preprocess_data(melbourne_file_path):

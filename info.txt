@@ -155,3 +155,18 @@ GarageType -- N/A - no garage sop I put 0 here, other types are integers, where 
 GarageYearBuild -- N/A , there was 64 N/A so it is liklely those are the same values when garage is missing. I think I will ignore that value
 
 GarageCond and other garage values. seems like all having gaps when no garae is present
+Not usre hat diffrence on GarageQuality / GarageCond is.
+
+PoolQC -- qulity of pool. I can see that NA is not present, but in PoolArea we have zero at that locations
+
+
+Fence -- N/A no fence. So N/a - 0 , other values integers 
+
+MiscFeature -- temporary some integers put, NA for lack of misc feature
+BsMt{Qual,Cond,Exposure,FinType1,FinType2} 37,37,38,37,38 
+Electrical -- 
+correlations: bsmtqual - no correlation 
+	lets make random choice based on histogram of samples
+made a correlations among yearbuilt of building and electril type. And it seem all above is SBRKR
+
+utting 0 into something, is this restriction? as 0 times something is 0..
