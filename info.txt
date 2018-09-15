@@ -169,4 +169,6 @@ correlations: bsmtqual - no correlation
 	lets make random choice based on histogram of samples
 made a correlations among yearbuilt of building and electril type. And it seem all above is SBRKR
 
-utting 0 into something, is this restriction? as 0 times something is 0..
+using 0 into something, is this restriction? as 0 times something is 0..
+
+one hot representation -- how to make it done

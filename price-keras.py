@@ -398,6 +398,74 @@ def fill_electrical_up(data):
     #plt.savefig("electrical.png")
     return
 
+def convert_mszoning(data):
+
+    # TODO: convert to one hot representation
+    data['MSZoning'].replace("A",1,inplace=True)
+    data['MSZoning'].replace("C",2,inplace=True)
+    data['MSZoning'].replace("FV",3,inplace=True)
+    data['MSZoning'].replace("I",4,inplace=True)
+    data['MSZoning'].replace("RH",5,inplace=True)
+    data['MSZoning'].replace("RL",6,inplace=True)
+    data['MSZoning'].replace("RP",7,inplace=True)
+    data['MSZoning'].replace("RM",8,inplace=True)
+    return
+
+
+def convert_street(data):
+
+    # TODO: convert to one hot representation
+    data['Street'].replace("Grvl",-1,inplace=True)
+    data['Street'].replace("Pave",1,inplace=True)
+    return
+
+
+def convert_lotshape(data):
+
+    data['LotShape'].replace("IR3",1,inplace=True)
+    data['LotShape'].replace("IR2",2,inplace=True)
+    data['LotShape'].replace("IR1",3,inplace=True)
+    data['LotShape'].replace("Reg",4,inplace=True)
+    return
+
+
+def convert_LandContour(data):
+
+    # TODO: Make one hot
+    data['LandContour'].replace("Low",1,inplace=True)
+    data['LandContour'].replace("HLS",2,inplace=True)
+    data['LandContour'].replace("Bnk",3,inplace=True)
+    data['LandContour'].replace("Lvl",4,inplace=True)
+    return
+
+
+def convert_Utilities(data):
+
+    # TODO: Make one hot
+    data['Utilities'].replace("ELO",1,inplace=True)
+    data['Utilities'].replace("NoSeWa",2,inplace=True)
+    data['Utilities'].replace("NoSewr",3,inplace=True)
+    data['Utilities'].replace("AllPub",4,inplace=True)
+    return
+
+
+def convert_lotconfig(data):
+    # TODO: Make one hot
+    data['LotConfig'].replace("Inside",1,inplace=True)
+    data['LotConfig'].replace("Corner",2,inplace=True)
+    data['LotConfig'].replace("CulDSac",3,inplace=True)
+    data['LotConfig'].replace("FR2",4,inplace=True)
+    data['LotConfig'].replace("FR3",5,inplace=True)
+    return
+
+
+def convert_LandSlope(data):
+
+    data['LandSlope'].replace("Sev",1,inplace=True)
+    data['LandSlope'].replace("Mod",2,inplace=True)
+    data['LandSlope'].replace("Gtl",3,inplace=True)
+    return
+
 
 def load_and_preprocess_comp_data(data_path):
     data = pd.read_csv(data_path)
@@ -424,9 +492,16 @@ def load_and_preprocess_comp_data(data_path):
     fill_bsmtfintype1_up(data)
     fill_bsmtfintype2_up(data)
     fill_electrical_up(data)
+    convert_mszoning(data)
+    convert_street(data)
+    convert_lotshape(data)
+    convert_LandContour(data)
+    convert_Utilities(data)
+    convert_lotconfig(data)
+    convert_LandSlope(data)
     if "SalePrice" in data:
         print(len(data["SalePrice"].values))
-    import pdb;pdb.set_trace()
+#    import pdb;pdb.set_trace()
     return data
 
 def load_and_preprocess_data(melbourne_file_path):
