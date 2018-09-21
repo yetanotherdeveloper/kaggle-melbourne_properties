@@ -403,12 +403,13 @@ def convert_mszoning(data):
     # TODO: convert to one hot representation
     data['MSZoning'].replace("A",1,inplace=True)
     data['MSZoning'].replace("C",2,inplace=True)
-    data['MSZoning'].replace("FV",3,inplace=True)
-    data['MSZoning'].replace("I",4,inplace=True)
-    data['MSZoning'].replace("RH",5,inplace=True)
-    data['MSZoning'].replace("RL",6,inplace=True)
-    data['MSZoning'].replace("RP",7,inplace=True)
-    data['MSZoning'].replace("RM",8,inplace=True)
+    data['MSZoning'].replace("C (all)",3,inplace=True)
+    data['MSZoning'].replace("FV",4,inplace=True)
+    data['MSZoning'].replace("I",5,inplace=True)
+    data['MSZoning'].replace("RH",6,inplace=True)
+    data['MSZoning'].replace("RL",7,inplace=True)
+    data['MSZoning'].replace("RP",8,inplace=True)
+    data['MSZoning'].replace("RM",9,inplace=True)
     return
 
 
@@ -526,9 +527,12 @@ def convert_Condition(data):
 
 def convert_BldgType(data):
 
-    data['BldgType'].replace("1Fam",5,inplace=True)
-    data['BldgType'].replace("2FmCon",4,inplace=True)
-    data['BldgType'].replace("Duplx ",3,inplace=True)
+    data['BldgType'].replace("1Fam",6,inplace=True)
+    data['BldgType'].replace("2FmCon",5,inplace=True)
+    data['BldgType'].replace("2fmCon",5,inplace=True)
+    data['BldgType'].replace("Duplx",4,inplace=True)
+    data['BldgType'].replace("Duplex",4,inplace=True)
+    data['BldgType'].replace("Twnhs",3,inplace=True)
     data['BldgType'].replace("TwnhsE",2,inplace=True)
     data['BldgType'].replace("TwnhsI",1,inplace=True)
     return
@@ -544,7 +548,7 @@ def convert_HouseStyle(data):
     data['HouseStyle'].replace("2.5Fin",5,inplace=True)
     data['HouseStyle'].replace("2.5Unf",6,inplace=True)
     data['HouseStyle'].replace("SFoyer",7,inplace=True)
-    data['HouseStyle'].replace("SLvl  ",8,inplace=True)
+    data['HouseStyle'].replace("SLvl",8,inplace=True)
     return
 
 
@@ -577,43 +581,50 @@ def convert_Exterior(data):
     data['Exterior1st'].replace("AsbShng",1,inplace=True)
     data['Exterior1st'].replace("AsphShn",2,inplace=True)
     data['Exterior1st'].replace("BrkComm",3,inplace=True)
+    data['Exterior1st'].replace("Brk Cmn",3,inplace=True)
     data['Exterior1st'].replace("BrkFace",4,inplace=True)
-    data['Exterior1st'].replace("CBlock ",5,inplace=True)
+    data['Exterior1st'].replace("CBlock",5,inplace=True)
     data['Exterior1st'].replace("CemntBd",6,inplace=True)
+    data['Exterior1st'].replace("CmentBd",6,inplace=True)
     data['Exterior1st'].replace("HdBoard",7,inplace=True)
     data['Exterior1st'].replace("ImStucc",8,inplace=True)
     data['Exterior1st'].replace("MetalSd",9,inplace=True)
-    data['Exterior1st'].replace("Other  ",10,inplace=True)
+    data['Exterior1st'].replace("Other",10,inplace=True)
     data['Exterior1st'].replace("Plywood",11,inplace=True)
     data['Exterior1st'].replace("PreCast",12,inplace=True)
-    data['Exterior1st'].replace("Stone  ",13,inplace=True)
-    data['Exterior1st'].replace("Stucco ",14,inplace=True)
+    data['Exterior1st'].replace("Stone",13,inplace=True)
+    data['Exterior1st'].replace("Stucco",14,inplace=True)
     data['Exterior1st'].replace("VinylSd",15,inplace=True)
     data['Exterior1st'].replace("Wd Sdng",16,inplace=True)
     data['Exterior1st'].replace("WdShing",17,inplace=True)
+    data['Exterior1st'].replace("Wd Shng",18,inplace=True)
        	
     data['Exterior2nd'].replace("AsbShng",1,inplace=True)
     data['Exterior2nd'].replace("AsphShn",2,inplace=True)
     data['Exterior2nd'].replace("BrkComm",3,inplace=True)
+    data['Exterior2nd'].replace("Brk Cmn",3,inplace=True)
     data['Exterior2nd'].replace("BrkFace",4,inplace=True)
-    data['Exterior2nd'].replace("CBlock ",5,inplace=True)
+    data['Exterior2nd'].replace("CBlock",5,inplace=True)
     data['Exterior2nd'].replace("CemntBd",6,inplace=True)
+    data['Exterior2nd'].replace("CmentBd",6,inplace=True)
     data['Exterior2nd'].replace("HdBoard",7,inplace=True)
     data['Exterior2nd'].replace("ImStucc",8,inplace=True)
     data['Exterior2nd'].replace("MetalSd",9,inplace=True)
-    data['Exterior2nd'].replace("Other  ",10,inplace=True)
+    data['Exterior2nd'].replace("Other",10,inplace=True)
     data['Exterior2nd'].replace("Plywood",11,inplace=True)
     data['Exterior2nd'].replace("PreCast",12,inplace=True)
-    data['Exterior2nd'].replace("Stone  ",13,inplace=True)
-    data['Exterior2nd'].replace("Stucco ",14,inplace=True)
+    data['Exterior2nd'].replace("Stone",13,inplace=True)
+    data['Exterior2nd'].replace("Stucco",14,inplace=True)
     data['Exterior2nd'].replace("VinylSd",15,inplace=True)
     data['Exterior2nd'].replace("Wd Sdng",16,inplace=True)
     data['Exterior2nd'].replace("WdShing",17,inplace=True)
+    data['Exterior2nd'].replace("Wd Shng",18,inplace=True)
     return
 
 
 def convert_MasVnrType(data):
     data['MasVnrType'].replace("BrkCmn",1,inplace=True)
+    data['MasVnrType'].replace("Brk Cmn",1,inplace=True)
     data['MasVnrType'].replace("BrkFace",2,inplace=True)
     data['MasVnrType'].replace("CBlock",3,inplace=True)
     data['MasVnrType'].replace("None",4,inplace=True)
@@ -780,10 +791,8 @@ def load_and_preprocess_comp_data(data_path):
     convert_SaleType(data)
     convert_SaleCondition(data)
     convert_PavedDrive(data)
-    import pdb; pdb.set_trace()
     if "SalePrice" in data:
         print(len(data["SalePrice"].values))
-#    import pdb;pdb.set_trace()
     return data
 
 def load_and_preprocess_data(melbourne_file_path):
