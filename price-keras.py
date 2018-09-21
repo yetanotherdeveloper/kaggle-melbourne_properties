@@ -466,6 +466,266 @@ def convert_LandSlope(data):
     data['LandSlope'].replace("Gtl",3,inplace=True)
     return
 
+def convert_Neighbourhood(data):
+
+    data['Neighborhood'].replace("Blmngtn",1,inplace=True)
+    data['Neighborhood'].replace("Blueste",2,inplace=True)
+    data['Neighborhood'].replace("BrDale",3,inplace=True)
+    data['Neighborhood'].replace("BrkSide",4,inplace=True)
+    data['Neighborhood'].replace("ClearCr",5,inplace=True)
+    data['Neighborhood'].replace("CollgCr",6,inplace=True)
+    data['Neighborhood'].replace("Crawfor",7,inplace=True)
+    data['Neighborhood'].replace("Edwards",8,inplace=True)
+    data['Neighborhood'].replace("Gilbert",9,inplace=True)
+    data['Neighborhood'].replace("Greens",10,inplace=True)
+    data['Neighborhood'].replace("GrnHill",11,inplace=True)
+    data['Neighborhood'].replace("IDOTRR",12,inplace=True)
+    data['Neighborhood'].replace("Landmrk",13,inplace=True)
+    data['Neighborhood'].replace("MeadowV",14,inplace=True)
+    data['Neighborhood'].replace("Mitchel",15,inplace=True)
+    data['Neighborhood'].replace("NAmes",16,inplace=True)
+    data['Neighborhood'].replace("NoRidge",17,inplace=True)
+    data['Neighborhood'].replace("NPkVill",18,inplace=True)
+    data['Neighborhood'].replace("NridgHt",19,inplace=True)
+    data['Neighborhood'].replace("NWAmes",20,inplace=True)
+    data['Neighborhood'].replace("OldTown",21,inplace=True)
+    data['Neighborhood'].replace("SWISU",22,inplace=True)
+    data['Neighborhood'].replace("Sawyer",23,inplace=True)
+    data['Neighborhood'].replace("SawyerW",24,inplace=True)
+    data['Neighborhood'].replace("Somerst",25,inplace=True)
+    data['Neighborhood'].replace("StoneBr",26,inplace=True)
+    data['Neighborhood'].replace("Timber",27,inplace=True)
+    data['Neighborhood'].replace("Veenker",28,inplace=True)
+
+    return
+
+
+def convert_Condition(data):
+
+    data['Condition1'].replace("Artery",1,inplace=True)
+    data['Condition1'].replace("Feedr",2,inplace=True)
+    data['Condition1'].replace("Norm",3,inplace=True)
+    data['Condition1'].replace("RRNn",4,inplace=True)
+    data['Condition1'].replace("RRAn",5,inplace=True)
+    data['Condition1'].replace("PosN",6,inplace=True)
+    data['Condition1'].replace("PosA",7,inplace=True)
+    data['Condition1'].replace("RRNe",8,inplace=True)
+    data['Condition1'].replace("RRAe",9,inplace=True)
+
+    data['Condition2'].replace("Artery",1,inplace=True)
+    data['Condition2'].replace("Feedr",2,inplace=True)
+    data['Condition2'].replace("Norm",3,inplace=True)
+    data['Condition2'].replace("RRNn",4,inplace=True)
+    data['Condition2'].replace("RRAn",5,inplace=True)
+    data['Condition2'].replace("PosN",6,inplace=True)
+    data['Condition2'].replace("PosA",7,inplace=True)
+    data['Condition2'].replace("RRNe",8,inplace=True)
+    data['Condition2'].replace("RRAe",9,inplace=True)
+    return
+
+
+def convert_BldgType(data):
+
+    data['BldgType'].replace("1Fam",5,inplace=True)
+    data['BldgType'].replace("2FmCon",4,inplace=True)
+    data['BldgType'].replace("Duplx ",3,inplace=True)
+    data['BldgType'].replace("TwnhsE",2,inplace=True)
+    data['BldgType'].replace("TwnhsI",1,inplace=True)
+    return
+
+
+
+def convert_HouseStyle(data):
+
+    data['HouseStyle'].replace("1Story",1,inplace=True)
+    data['HouseStyle'].replace("1.5Fin",2,inplace=True)
+    data['HouseStyle'].replace("1.5Unf",3,inplace=True)
+    data['HouseStyle'].replace("2Story",4,inplace=True)
+    data['HouseStyle'].replace("2.5Fin",5,inplace=True)
+    data['HouseStyle'].replace("2.5Unf",6,inplace=True)
+    data['HouseStyle'].replace("SFoyer",7,inplace=True)
+    data['HouseStyle'].replace("SLvl  ",8,inplace=True)
+    return
+
+
+def convert_RoofStyle(data):
+
+    data['RoofStyle'].replace("Flat",1,inplace=True)
+    data['RoofStyle'].replace("Gable",2,inplace=True)
+    data['RoofStyle'].replace("Gambrel",3,inplace=True)
+    data['RoofStyle'].replace("Hip",4,inplace=True)
+    data['RoofStyle'].replace("Mansard",5,inplace=True)
+    data['RoofStyle'].replace("Shed",6,inplace=True)
+    return
+
+
+def convert_RoofMatl(data):
+
+    data['RoofMatl'].replace("ClyTile",1,inplace=True)
+    data['RoofMatl'].replace("CompShg",2,inplace=True)
+    data['RoofMatl'].replace("Membran",3,inplace=True)
+    data['RoofMatl'].replace("Metal",4,inplace=True)
+    data['RoofMatl'].replace("Roll",5,inplace=True)
+    data['RoofMatl'].replace("Tar&Grv",6,inplace=True)
+    data['RoofMatl'].replace("WdShake",7,inplace=True)
+    data['RoofMatl'].replace("WdShngl",8,inplace=True)
+    return
+
+
+def convert_Exterior(data):
+
+    data['Exterior1st'].replace("AsbShng",1,inplace=True)
+    data['Exterior1st'].replace("AsphShn",2,inplace=True)
+    data['Exterior1st'].replace("BrkComm",3,inplace=True)
+    data['Exterior1st'].replace("BrkFace",4,inplace=True)
+    data['Exterior1st'].replace("CBlock ",5,inplace=True)
+    data['Exterior1st'].replace("CemntBd",6,inplace=True)
+    data['Exterior1st'].replace("HdBoard",7,inplace=True)
+    data['Exterior1st'].replace("ImStucc",8,inplace=True)
+    data['Exterior1st'].replace("MetalSd",9,inplace=True)
+    data['Exterior1st'].replace("Other  ",10,inplace=True)
+    data['Exterior1st'].replace("Plywood",11,inplace=True)
+    data['Exterior1st'].replace("PreCast",12,inplace=True)
+    data['Exterior1st'].replace("Stone  ",13,inplace=True)
+    data['Exterior1st'].replace("Stucco ",14,inplace=True)
+    data['Exterior1st'].replace("VinylSd",15,inplace=True)
+    data['Exterior1st'].replace("Wd Sdng",16,inplace=True)
+    data['Exterior1st'].replace("WdShing",17,inplace=True)
+       	
+    data['Exterior2nd'].replace("AsbShng",1,inplace=True)
+    data['Exterior2nd'].replace("AsphShn",2,inplace=True)
+    data['Exterior2nd'].replace("BrkComm",3,inplace=True)
+    data['Exterior2nd'].replace("BrkFace",4,inplace=True)
+    data['Exterior2nd'].replace("CBlock ",5,inplace=True)
+    data['Exterior2nd'].replace("CemntBd",6,inplace=True)
+    data['Exterior2nd'].replace("HdBoard",7,inplace=True)
+    data['Exterior2nd'].replace("ImStucc",8,inplace=True)
+    data['Exterior2nd'].replace("MetalSd",9,inplace=True)
+    data['Exterior2nd'].replace("Other  ",10,inplace=True)
+    data['Exterior2nd'].replace("Plywood",11,inplace=True)
+    data['Exterior2nd'].replace("PreCast",12,inplace=True)
+    data['Exterior2nd'].replace("Stone  ",13,inplace=True)
+    data['Exterior2nd'].replace("Stucco ",14,inplace=True)
+    data['Exterior2nd'].replace("VinylSd",15,inplace=True)
+    data['Exterior2nd'].replace("Wd Sdng",16,inplace=True)
+    data['Exterior2nd'].replace("WdShing",17,inplace=True)
+    return
+
+
+def convert_MasVnrType(data):
+    data['MasVnrType'].replace("BrkCmn",1,inplace=True)
+    data['MasVnrType'].replace("BrkFace",2,inplace=True)
+    data['MasVnrType'].replace("CBlock",3,inplace=True)
+    data['MasVnrType'].replace("None",4,inplace=True)
+    data['MasVnrType'].replace("Stone",5,inplace=True)
+    return
+
+
+def convert_ExterQual(data):
+
+    data['ExterQual'].replace("Ex",5,inplace=True)
+    data['ExterQual'].replace("Gd",4,inplace=True)
+    data['ExterQual'].replace("TA",3,inplace=True)
+    data['ExterQual'].replace("Fa",2,inplace=True)
+    data['ExterQual'].replace("Po",1,inplace=True)
+    return
+
+
+def convert_ExterCond(data):
+
+    data['ExterCond'].replace("Ex",5,inplace=True)
+    data['ExterCond'].replace("Gd",4,inplace=True)
+    data['ExterCond'].replace("TA",3,inplace=True)
+    data['ExterCond'].replace("Fa",2,inplace=True)
+    data['ExterCond'].replace("Po",1,inplace=True)
+    return
+
+def convert_Foundation(data):
+    data['Foundation'].replace("BrkTil",6,inplace=True)
+    data['Foundation'].replace("CBlock",5,inplace=True)
+    data['Foundation'].replace("PConc",4,inplace=True)
+    data['Foundation'].replace("Slab",3,inplace=True)
+    data['Foundation'].replace("Stone",2,inplace=True)
+    data['Foundation'].replace("Wood",1,inplace=True)
+    return
+
+
+def convert_Heating(data):
+    data['Heating'].replace("Floor",6,inplace=True)
+    data['Heating'].replace("GasA",5,inplace=True)
+    data['Heating'].replace("GasW",4,inplace=True)
+    data['Heating'].replace("Grav",3,inplace=True)
+    data['Heating'].replace("OthW",2,inplace=True)
+    data['Heating'].replace("Wall",1,inplace=True)
+    return
+
+def convert_HeatingQC(data):
+    data['HeatingQC'].replace("Ex",5,inplace=True)
+    data['HeatingQC'].replace("Gd",4,inplace=True)
+    data['HeatingQC'].replace("TA",3,inplace=True)
+    data['HeatingQC'].replace("Fa",2,inplace=True)
+    data['HeatingQC'].replace("Po",1,inplace=True)
+    return
+
+
+def convert_Functional(data):
+
+    data['Functional'].replace("Typ",8,inplace=True)
+    data['Functional'].replace("Min1",7,inplace=True)
+    data['Functional'].replace("Min2",6,inplace=True)
+    data['Functional'].replace("Mod",5,inplace=True)
+    data['Functional'].replace("Maj1",4,inplace=True)
+    data['Functional'].replace("Maj2",3,inplace=True)
+    data['Functional'].replace("Sev",2,inplace=True)
+    data['Functional'].replace("Sal",1,inplace=True)
+    return
+
+
+def convert_KitchenQual(data):
+    data['KitchenQual'].replace("Ex",5,inplace=True)
+    data['KitchenQual'].replace("Gd",4,inplace=True)
+    data['KitchenQual'].replace("TA",3,inplace=True)
+    data['KitchenQual'].replace("Fa",2,inplace=True)
+    data['KitchenQual'].replace("Po",1,inplace=True)
+    return
+
+
+def convert_CentralAir(data):
+    data['CentralAir'].replace("N",0,inplace=True)
+    data['CentralAir'].replace("Y",1,inplace=True)
+    return
+
+def convert_SaleType(data):
+    data['SaleType'].replace("WD",10,inplace=True)
+    data['SaleType'].replace("CWD",9,inplace=True)
+    data['SaleType'].replace("VWD",8,inplace=True)
+    data['SaleType'].replace("New",7,inplace=True)
+    data['SaleType'].replace("COD",6,inplace=True)
+    data['SaleType'].replace("Con",5,inplace=True)
+    data['SaleType'].replace("ConLw",4,inplace=True)
+    data['SaleType'].replace("ConLI",3,inplace=True)
+    data['SaleType'].replace("ConLD",2,inplace=True)
+    data['SaleType'].replace("Oth",1,inplace=True)
+    return
+
+
+def convert_SaleCondition(data):
+    data['SaleCondition'].replace("Normal",6,inplace=True)
+    data['SaleCondition'].replace("Abnorml",5,inplace=True)
+    data['SaleCondition'].replace("AdjLand",4,inplace=True)
+    data['SaleCondition'].replace("Alloca",3,inplace=True)
+    data['SaleCondition'].replace("Family",2,inplace=True)
+    data['SaleCondition'].replace("Partial",1,inplace=True)
+    return
+
+
+
+def convert_PavedDrive(data):
+    data['PavedDrive'].replace("N",0,inplace=True)
+    data['PavedDrive'].replace("P",1,inplace=True)
+    data['PavedDrive'].replace("Y",2,inplace=True)
+    return
+
 
 def load_and_preprocess_comp_data(data_path):
     data = pd.read_csv(data_path)
@@ -499,6 +759,28 @@ def load_and_preprocess_comp_data(data_path):
     convert_Utilities(data)
     convert_lotconfig(data)
     convert_LandSlope(data)
+    convert_Neighbourhood(data)
+    convert_Condition(data)
+    convert_BldgType(data)
+    convert_HouseStyle(data)
+    convert_RoofStyle(data)
+    convert_RoofMatl(data)
+
+    convert_Exterior(data)
+    convert_Exterior(data)
+    convert_MasVnrType(data)
+    convert_ExterQual(data)
+    convert_ExterCond(data)
+    convert_Foundation(data)
+    convert_Heating(data)
+    convert_HeatingQC(data)
+    convert_Functional(data)
+    convert_KitchenQual(data)
+    convert_CentralAir(data)
+    convert_SaleType(data)
+    convert_SaleCondition(data)
+    convert_PavedDrive(data)
+    import pdb; pdb.set_trace()
     if "SalePrice" in data:
         print(len(data["SalePrice"].values))
 #    import pdb;pdb.set_trace()
