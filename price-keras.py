@@ -367,6 +367,10 @@ def fill_bsmtfintype2_up(data):
     data['BsmtFinType2'].replace("GLQ",6,inplace=True)
     return
 
+def fill_masvnrarea_up(data):
+    # We treat N/A as lack of masonary vaneer area 
+    data['MasVnrArea'].fillna(0,inplace=True)
+    return
 
 def fill_electrical_up(data):
 
@@ -629,6 +633,7 @@ def convert_MasVnrType(data):
     data['MasVnrType'].replace("BrkFace",2,inplace=True)
     data['MasVnrType'].replace("CBlock",3,inplace=True)
     data['MasVnrType'].replace("None",4,inplace=True)
+    data['MasVnrType'].fillna(4,inplace=True)
     data['MasVnrType'].replace("Stone",5,inplace=True)
     return
 
@@ -764,6 +769,7 @@ def load_and_preprocess_comp_data(data_path):
     fill_bsmtfintype1_up(data)
     fill_bsmtfintype2_up(data)
     fill_electrical_up(data)
+    fill_masvnrarea_up(data)
     convert_mszoning(data)
     convert_street(data)
     convert_lotshape(data)
@@ -862,10 +868,8 @@ def prepare_melbourne_dataset(melbourne_dataset_file):
 def prepare_competition_dataset(data_file):
     data = load_and_preprocess_comp_data(data_file)
     # Ignored:
-    #
-    input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'MoSold', 'YrSold', 'SaleType', 'SaleCondition']
-    input_features = ['BldgType','MSSubClass']
-    #import pdb; pdb.set_trace()
+    # SalePrice, YrSold, MoSold, SaleType
+    input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'SaleCondition']
     return data[input_features],data['SalePrice']
 
 def parse_desc(model_desc):
@@ -953,7 +957,6 @@ def normalize_input(data,features):
 
 def train(model_name, model_desc, num_epochs, X, y):
 
- #   import pdb; pdb.set_trace()
     initial_epoch = 1
     if model_name == "" or model_name == "FFN": 
         model_name = "FFN"

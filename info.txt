@@ -173,5 +173,8 @@ using 0 into something, is this restriction? as 0 times something is 0..
 
 one hot representation -- how to make it done
 
+Ignoring SaleType, YrSold, MoSold. Should I ignore SaleCondition?
+
+MasVnrType and MasVnrArea
 
 Make some experimetns
