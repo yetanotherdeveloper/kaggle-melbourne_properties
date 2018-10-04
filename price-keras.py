@@ -947,13 +947,14 @@ def make_selu_model(model_name,model_desc,num_features):
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
 
-def normalize_input(data,features):
+def normalize_input(data):
     """ Modify data so it is zero meaned """
     # Get all data from selected columns across samples
     # TODO: remove warnings
-    for col in features:
-        scaler = StandardScaler().fit(data[col])
-        data[col] = scaler.transform(data[col])
+    for col in data:
+        scaler = StandardScaler().fit(data[col].reshape(-1,1))
+        data[col] = scaler.transform([data[col]]).flatten()
+    return
 
 def train(model_name, model_desc, num_epochs, X, y):
 
@@ -962,7 +963,7 @@ def train(model_name, model_desc, num_epochs, X, y):
         model_name = "FFN"
         melbourne_model = make_relu_model(model_name,model_desc,len(X.columns))
     elif model_name == "SNN":
-        normalize_input(X,input_features)
+        normalize_input(X)
         melbourne_model = make_selu_model(model_name,model_desc,len(X.columns))
     else:
         tmpstr = model_name[:model_name.find("-val_loss")]
