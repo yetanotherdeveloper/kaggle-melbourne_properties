@@ -870,7 +870,8 @@ def prepare_competition_dataset(data_file):
     # Ignored:
     # SalePrice, YrSold, MoSold, SaleType
     input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'SaleCondition']
-    return data[input_features],data['SalePrice']
+
+    return data[input_features], data['SalePrice'] if args.train == True else None
 
 def parse_desc(model_desc):
     ''' Parse desc of model. Format is num of units in first layer, num of units in next layer..
@@ -999,7 +1000,7 @@ def train(model_name, model_desc, num_epochs, X, y):
 # So we will take the simplest option for now, and drop those houses from our data. 
 #Don't worry about this much for now, though the code is:
 
-def infer(model_name, X, y):
+def infer(model_name, X):
     if model_name == "":
         print("Error: Inference mode require model given with --model option")
         exit(-1)
@@ -1037,7 +1038,7 @@ if __name__ == "__main__":
     elif args.train == True:
         train(args.type,args.model,args.num_epochs, dataX, dataY)
     elif args.infer == True:
-        infer(args.model, testX, testY)
+        infer(args.model, dataX)
     else:
         print("Error: Please specify either train of infer commandline option")
         exit(1)
