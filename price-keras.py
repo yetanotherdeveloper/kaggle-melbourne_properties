@@ -796,8 +796,10 @@ def load_and_preprocess_comp_data(data_path):
     # Based on paper on IOWA dataset and chart GRLivArea/SalePrice
     # We can see that SalePrice of houses GrLivArea of values above 4000 square feets are strange
     # paper recommented to remove them so we did
-    data = data[data.GrLivArea <= 4000]
-    
+    # Author of Iowa data set recommend to remove
+    # bigger GrLivArea that 4000 , but it cannot be done
+    # as kaggle submission (test) require also that one
+    #data = data[data.GrLivArea <= 4000]
     fill_alley_up(data)
     fill_lotfrontage(data)
     fill_fireplaceqa_up(data)
