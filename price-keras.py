@@ -259,6 +259,13 @@ def fill_garagequal_up(data):
 
     return 
 
+def fill_garagecars_up(data):
+    data['GarageCars'].fillna(0,inplace=True)
+    return
+
+def fill_garagearea_up(data):
+    data['GarageArea'].fillna(0,inplace=True)
+    return
 
 def fill_garagecond_up(data):
     data['GarageCond'].fillna(0,inplace=True)
@@ -343,6 +350,22 @@ def fill_bsmtexposure_up(data):
     data['BsmtExposure'].replace("Gd",4,inplace=True)
     return
 
+def fill_bsmtfinsf1(data):
+    data['BsmtFinSF1'].fillna(0,inplace=True)
+    return
+
+def fill_bsmtfinsf2(data):
+    data['BsmtFinSF2'].fillna(0,inplace=True)
+    return
+
+
+def fill_bsmtunfsf(data):
+    data['BsmtUnfSF'].fillna(0,inplace=True)
+    return
+
+def fill_bsmttotalsf(data):
+    data['TotalBsmtSF'].fillna(0,inplace=True)
+    return
 
 def fill_bsmtfintype1_up(data):
 
@@ -355,6 +378,16 @@ def fill_bsmtfintype1_up(data):
     data['BsmtFinType1'].replace("GLQ",6,inplace=True)
     return
 
+
+def fill_bsmtfullbath_up(data):
+    # If none declared then assume 0
+    data['BsmtFullBath'].fillna(0,inplace=True)
+    return
+
+def fill_bsmthalfbath_up(data):
+    # If none declared then assume 0
+    data['BsmtHalfBath'].fillna(0,inplace=True)
+    return
 
 def fill_bsmtfintype2_up(data):
 
@@ -384,7 +417,6 @@ def fill_electrical_up(data):
     # Missing data is a building fairly new , so after
     # 1960s all have SBRKR type of electrial
     data['Electrical'].fillna("SBrkr",inplace=True)
-
     data['Electrical'].replace("Mix",1,inplace=True)
     data['Electrical'].replace("FuseP",2,inplace=True)
     data['Electrical'].replace("FuseF",3,inplace=True)
@@ -405,6 +437,13 @@ def fill_electrical_up(data):
 
 def convert_mszoning(data):
 
+    data.MSZoning[455] = "RM"
+    data.MSZoning[756] = "RM"
+    data.MSZoning[790] = "RM"
+    data.MSZoning[1444] = "RL"
+    # Mitchel -> RL
+    # IDOTRR -> RM
+
     # TODO: convert to one hot representation
     data['MSZoning'].replace("A",1,inplace=True)
     data['MSZoning'].replace("C",2,inplace=True)
@@ -415,6 +454,7 @@ def convert_mszoning(data):
     data['MSZoning'].replace("RL",7,inplace=True)
     data['MSZoning'].replace("RP",8,inplace=True)
     data['MSZoning'].replace("RM",9,inplace=True)
+
     return
 
 
@@ -448,6 +488,7 @@ def convert_LandContour(data):
 def convert_Utilities(data):
 
     # TODO: Make one hot
+    data['Utilities'].fillna("AllPub",inplace=True)
     data['Utilities'].replace("ELO",1,inplace=True)
     data['Utilities'].replace("NoSeWa",2,inplace=True)
     data['Utilities'].replace("NoSewr",3,inplace=True)
@@ -594,6 +635,7 @@ def convert_Exterior(data):
     data['Exterior1st'].replace("HdBoard",7,inplace=True)
     data['Exterior1st'].replace("ImStucc",8,inplace=True)
     data['Exterior1st'].replace("MetalSd",9,inplace=True)
+    data['Exterior1st'].fillna("Other",inplace=True)
     data['Exterior1st'].replace("Other",10,inplace=True)
     data['Exterior1st'].replace("Plywood",11,inplace=True)
     data['Exterior1st'].replace("PreCast",12,inplace=True)
@@ -615,6 +657,7 @@ def convert_Exterior(data):
     data['Exterior2nd'].replace("HdBoard",7,inplace=True)
     data['Exterior2nd'].replace("ImStucc",8,inplace=True)
     data['Exterior2nd'].replace("MetalSd",9,inplace=True)
+    data['Exterior2nd'].fillna("Other",inplace=True)
     data['Exterior2nd'].replace("Other",10,inplace=True)
     data['Exterior2nd'].replace("Plywood",11,inplace=True)
     data['Exterior2nd'].replace("PreCast",12,inplace=True)
@@ -687,6 +730,7 @@ def convert_HeatingQC(data):
 
 def convert_Functional(data):
 
+    data['Functional'].fillna("Typ",inplace=True)
     data['Functional'].replace("Typ",8,inplace=True)
     data['Functional'].replace("Min1",7,inplace=True)
     data['Functional'].replace("Min2",6,inplace=True)
@@ -699,8 +743,10 @@ def convert_Functional(data):
 
 
 def convert_KitchenQual(data):
+
     data['KitchenQual'].replace("Ex",5,inplace=True)
     data['KitchenQual'].replace("Gd",4,inplace=True)
+    data['KitchenQual'].fillna("TA",inplace=True)
     data['KitchenQual'].replace("TA",3,inplace=True)
     data['KitchenQual'].replace("Fa",2,inplace=True)
     data['KitchenQual'].replace("Po",1,inplace=True)
@@ -760,6 +806,8 @@ def load_and_preprocess_comp_data(data_path):
     fill_garagefinish_up(data)
     fill_garagequal_up(data)
     fill_garagecond_up(data)
+    fill_garagecars_up(data)
+    fill_garagearea_up(data)
     fill_poolqc_up(data)
     fill_fence_up(data)
     fill_misc_up(data)
@@ -768,6 +816,12 @@ def load_and_preprocess_comp_data(data_path):
     fill_bsmtexposure_up(data)
     fill_bsmtfintype1_up(data)
     fill_bsmtfintype2_up(data)
+    fill_bsmtfinsf1(data)
+    fill_bsmtfinsf2(data)
+    fill_bsmtunfsf(data)
+    fill_bsmttotalsf(data)
+    fill_bsmtfullbath_up(data)
+    fill_bsmthalfbath_up(data)
     fill_electrical_up(data)
     fill_masvnrarea_up(data)
     convert_mszoning(data)
@@ -868,10 +922,9 @@ def prepare_melbourne_dataset(melbourne_dataset_file):
 def prepare_competition_dataset(data_file):
     data = load_and_preprocess_comp_data(data_file)
     # Ignored:
-    # SalePrice, YrSold, MoSold, SaleType
+    # Id,SalePrice, YrSold, MoSold, SaleType
     input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'SaleCondition']
-
-    return data[input_features], data['SalePrice'] if args.train == True else None
+    return data['Id'], data[input_features], data['SalePrice'] if args.train == True else None
 
 def parse_desc(model_desc):
     ''' Parse desc of model. Format is num of units in first layer, num of units in next layer..
@@ -1000,20 +1053,16 @@ def train(model_name, model_desc, num_epochs, X, y):
 # So we will take the simplest option for now, and drop those houses from our data. 
 #Don't worry about this much for now, though the code is:
 
-def infer(model_name, X):
+def infer(model_name, X, Ids):
     if model_name == "":
         print("Error: Inference mode require model given with --model option")
         exit(-1)
 
-
-    #melbourne_model.add(keras.layers.Dense(1, activation='relu',input_dim=len(input_features))) # MAE: 1072223
-    melbourne_model = make_relu_model(model_name,len(input_features))
-    melbourne_model.load_weights(model_name)
+    melbourne_model = keras.models.load_model(model_name)
     predictions = melbourne_model.predict(X.values)
-    print("MAE:",mean_absolute_error(predictions,y.values))
-        
-    scores = melbourne_model.evaluate(X.values,y.values,verbose=0)
-    print("%s: %.2f" % (melbourne_model.metrics_names[0], scores))
+    print("Id,SalePrice")        
+    for i in range(0,len(Ids)):
+        print("%d,%f" %(Ids.values[i],predictions[i]))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -1029,7 +1078,7 @@ if __name__ == "__main__":
     if args.dataset[0:4] == 'melb':
         trainX, testX, trainY, testY = prepare_melbourne_dataset(args.dataset[5:])
     elif args.dataset[0:4] == 'comp':
-        dataX, dataY  = prepare_competition_dataset(args.dataset[5:])
+        Ids, dataX, dataY  = prepare_competition_dataset(args.dataset[5:])
     else:
         print("Invalid value of dataset. Accepted values: 'comp' and 'melb'");
 
@@ -1038,7 +1087,7 @@ if __name__ == "__main__":
     elif args.train == True:
         train(args.type,args.model,args.num_epochs, dataX, dataY)
     elif args.infer == True:
-        infer(args.model, dataX)
+        infer(args.model, dataX, Ids)
     else:
         print("Error: Please specify either train of infer commandline option")
         exit(1)
