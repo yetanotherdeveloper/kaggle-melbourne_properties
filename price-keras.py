@@ -967,7 +967,7 @@ def make_relu_model(model_name,model_desc,num_features):
     desc_str = "Relu model: "
     for i in range(0,len(desc)):
         if i == 0:
-            melbourne_model.add(keras.layers.Dense(20, activation='relu', kernel_initializer='he_normal', input_dim=num_features))
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='relu', kernel_initializer='he_normal', input_dim=num_features))
             desc_str += str(desc[i])
         else:
             melbourne_model.add(keras.layers.Dense(desc[i], activation='relu', kernel_initializer='he_normal'))
@@ -988,11 +988,11 @@ def make_selu_model(model_name,model_desc,num_features):
 
     for i in range(0,len(desc)):
         if i == 0:
-            melbourne_model.add(keras.layers.Dense(20, kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
+            melbourne_model.add(keras.layers.Dense(desc[i], kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
                 activation='selu',input_dim=num_features))
             desc_str += str(desc[i])
         else:
-            melbourne_model.add(keras.layers.Dense(1, kernel_initializer='lecun_normal', bias_initializer='lecun_normal',
+            melbourne_model.add(keras.layers.Dense(desc[i], kernel_initializer='lecun_normal', bias_initializer='lecun_normal',
                 activation='selu'))   # MAE: 
             desc_str += "-"+str(desc[i])
 
