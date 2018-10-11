@@ -178,3 +178,5 @@ Ignoring SaleType, YrSold, MoSold. Should I ignore SaleCondition?
 MasVnrType and MasVnrArea
 
 Make some experimetns
+
+Val 0 , train 100 -- to find a model when it does to capable enough. And then increase validation

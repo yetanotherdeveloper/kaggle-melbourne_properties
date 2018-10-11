@@ -988,11 +988,11 @@ def make_selu_model(model_name,model_desc,num_features):
 
     for i in range(0,len(desc)):
         if i == 0:
-            melbourne_model.add(keras.layers.Dense(desc[i], kernel_initializer='lecun_normal',bias_initializer='lecun_normal',
+            melbourne_model.add(keras.layers.Dense(desc[i], kernel_initializer='lecun_normal',
                 activation='selu',input_dim=num_features))
             desc_str += str(desc[i])
         else:
-            melbourne_model.add(keras.layers.Dense(desc[i], kernel_initializer='lecun_normal', bias_initializer='lecun_normal',
+            melbourne_model.add(keras.layers.Dense(desc[i], kernel_initializer='lecun_normal',
                 activation='selu'))   # MAE: 
             desc_str += "-"+str(desc[i])
 
@@ -1008,7 +1008,7 @@ def normalize_input(data):
     # Get all data from selected columns across samples
     # TODO: remove warnings
     for col in data:
-        scaler = StandardScaler().fit(data[col].reshape(-1,1))
+        scaler = StandardScaler().fit(data[col].values.reshape(-1,1))
         data[col] = scaler.transform([data[col]]).flatten()
     return
 
@@ -1035,7 +1035,7 @@ def train(model_name, model_desc, num_epochs, X, y):
     os.mkdir(output)
     show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=num_epochs-10, verbose=1)
     checkpoint = keras.callbacks.ModelCheckpoint(filepath=output+"/melbourne_model"+melbourne_model.name+".epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
-
+    print("Model learning params: %d" %(melbourne_model.count_params()))
     history = melbourne_model.fit(X.values, y.values, validation_split=0.2, epochs=num_epochs, initial_epoch=initial_epoch, batch_size=1,callbacks=[show_stopper,checkpoint])
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
