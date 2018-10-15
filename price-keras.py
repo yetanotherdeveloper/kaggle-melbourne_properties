@@ -12,6 +12,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 import argparse
+import pickle
 import os
 
 def string2integer(ref,data,key):
@@ -1003,23 +1004,42 @@ def make_selu_model(model_name,model_desc,num_features):
     melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
     return melbourne_model
 
-def normalize_input(data):
+def normalize_input(output_dir, data):
     """ Modify data so it is zero meaned """
     # Get all data from selected columns across samples
     # TODO: remove warnings
+    list_of_scalers = {}
+    if args.scaler != "":
+        scalers = open(args.scaler,"rb")
+        list_of_scalers = pickle.load(scalers)
+    i = 0
     for col in data:
-        scaler = StandardScaler().fit(data[col].values.reshape(-1,1))
+        if args.scaler == "":
+            scaler = StandardScaler().fit(data[col].values.reshape(-1,1))
+            list_of_scalers[col] = scaler 
+        else:
+            scaler = list_of_scalers[col]
         data[col] = scaler.transform([data[col]]).flatten()
+    if args.scaler == "" and output_dir != "":
+        scalers = open(output_dir + "/scalers", "wb")
+        pickle.dump(list_of_scalers, scalers)
     return
 
 def train(model_name, model_desc, num_epochs, X, y):
 
     initial_epoch = 1
-    if model_name == "" or model_name == "FFN": 
+    if model_name == "":
         model_name = "FFN"
+    output = model_name + "_" + model_desc + "-num_epochs-" + str(num_epochs)
+    # TODO: Get name of model from compiled model and make
+    # name of file to save to based on that
+    if os.path.isdir(output):
+        shutil.rmtree(output)
+    os.mkdir(output)
+    if model_name == "" or model_name == "FFN": 
         melbourne_model = make_relu_model(model_name,model_desc,len(X.columns))
     elif model_name == "SNN":
-        normalize_input(X)
+        normalize_input(output,X)
         melbourne_model = make_selu_model(model_name,model_desc,len(X.columns))
     else:
         tmpstr = model_name[:model_name.find("-val_loss")]
@@ -1027,12 +1047,6 @@ def train(model_name, model_desc, num_epochs, X, y):
         melbourne_model = keras.models.load_model(model_name)
     num_epochs += initial_epoch - 1
 
-    # TODO: Get name of model from compiled model and make
-    # name of file to save to based on that
-    output = model_name + "_" + model_desc + "-num_epochs-" + str(num_epochs)
-    if os.path.isdir(output):
-        shutil.rmtree(output)
-    os.mkdir(output)
     show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=num_epochs-10, verbose=1)
     checkpoint = keras.callbacks.ModelCheckpoint(filepath=output+"/melbourne_model"+melbourne_model.name+".epoch-{epoch:02d}-val_loss-{val_loss:.4f}.hdf5",monitor='val_loss',save_best_only=True,verbose=1)
     print("Model learning params: %d" %(melbourne_model.count_params()))
@@ -1061,7 +1075,7 @@ def validate(model_name, X, Y):
         exit(-1)
     melbourne_model = keras.models.load_model(model_name)
     if model_name[0:3] == "SNN":
-        normalize_input(X)
+        normalize_input("",X)
     predictions = melbourne_model.predict(X.values)
     
     print("MAE:",mean_absolute_error(predictions,Y.values))
@@ -1074,7 +1088,7 @@ def infer(model_name, X, Ids):
 
     melbourne_model = keras.models.load_model(model_name)
     if model_name[0:3] == "SNN":
-        normalize_input(X)
+        normalize_input("",X)
     predictions = melbourne_model.predict(X.values)
     print("Id,SalePrice")        
     for i in range(0,len(Ids)):
@@ -1088,6 +1102,7 @@ if __name__ == "__main__":
     parser.add_argument("--validate", help="Perform validation check", action="store_true")
     parser.add_argument("--type", help="Type of Model to be used for training/inference", type=str, default="")
     parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="20,20,1")
+    parser.add_argument("--scaler", help="Use standard scaler instead of computing one from data", type=str, default="")
     parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="comp:train.csv")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     args = parser.parse_args()
