@@ -1,4 +1,4 @@
-#!/usr/bin/python
+##!/usr/bin/python
 import matplotlib
 matplotlib.use('Agg')
 import shutil
@@ -854,8 +854,8 @@ def load_and_preprocess_comp_data(data_path):
     convert_SaleType(data)
     convert_SaleCondition(data)
     convert_PavedDrive(data)
-    if "SalePrice" in data:
-        print(len(data["SalePrice"].values))
+    #if "SalePrice" in data:
+    #    print(len(data["SalePrice"].values))
     return data
 
 def load_and_preprocess_data(melbourne_file_path):
@@ -926,7 +926,7 @@ def prepare_competition_dataset(data_file):
     # Ignored:
     # Id,SalePrice, YrSold, MoSold, SaleType
     input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'SaleCondition']
-    return data['Id'], data[input_features], data['SalePrice'] if args.train == True else None
+    return data['Id'], data[input_features], data['SalePrice'] if args.train == True or args.validate == True else None
 
 def parse_desc(model_desc):
     ''' Parse desc of model. Format is num of units in first layer, num of units in next layer..
@@ -1055,12 +1055,26 @@ def train(model_name, model_desc, num_epochs, X, y):
 # So we will take the simplest option for now, and drop those houses from our data. 
 #Don't worry about this much for now, though the code is:
 
+def validate(model_name, X, Y):
+    if model_name == "":
+        print("Error: Validation mode require model given with --model option")
+        exit(-1)
+    melbourne_model = keras.models.load_model(model_name)
+    if model_name[0:3] == "SNN":
+        normalize_input(X)
+    predictions = melbourne_model.predict(X.values)
+    
+    print("MAE:",mean_absolute_error(predictions,Y.values))
+    return
+
 def infer(model_name, X, Ids):
     if model_name == "":
         print("Error: Inference mode require model given with --model option")
         exit(-1)
 
     melbourne_model = keras.models.load_model(model_name)
+    if model_name[0:3] == "SNN":
+        normalize_input(X)
     predictions = melbourne_model.predict(X.values)
     print("Id,SalePrice")        
     for i in range(0,len(Ids)):
@@ -1071,6 +1085,7 @@ if __name__ == "__main__":
     parser.add_argument("--train", help="Perform training", action="store_true")
     parser.add_argument("--preprocess_only", help="Perform data cleaning and store results in a file", action="store_true")
     parser.add_argument("--infer", help="Perform evaluation", action="store_true")
+    parser.add_argument("--validate", help="Perform validation check", action="store_true")
     parser.add_argument("--type", help="Type of Model to be used for training/inference", type=str, default="")
     parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="20,20,1")
     parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="comp:train.csv")
@@ -1090,6 +1105,8 @@ if __name__ == "__main__":
         train(args.type,args.model,args.num_epochs, dataX, dataY)
     elif args.infer == True:
         infer(args.model, dataX, Ids)
+    elif args.validate == True:
+        validate(args.model, dataX, dataY)
     else:
         print("Error: Please specify either train of infer commandline option")
         exit(1)
