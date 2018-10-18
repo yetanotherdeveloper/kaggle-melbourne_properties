@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from tensorflow.contrib import keras
 from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_log_error
 from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
@@ -438,12 +439,20 @@ def fill_electrical_up(data):
 
 def convert_mszoning(data):
 
-    data.MSZoning[455] = "RM"
-    data.MSZoning[756] = "RM"
-    data.MSZoning[790] = "RM"
-    data.MSZoning[1444] = "RL"
+    #import pdb; pdb.set_trace()
+    #data.MSZoning[455] = "RM"
+    #data.MSZoning[756] = "RM"
+    #data.MSZoning[790] = "RM"
+    #data.MSZoning[1444] = "RL"
     # Mitchel -> RL
     # IDOTRR -> RM
+
+    for i in range(0,len(data)):
+        if data.MSZoning.isnull()[i]:
+            if data.Neighborhood[i] == "Mitchel":
+                data.MSZoning[i] = "RL"
+            if data.Neighborhood[i] == "IDOTRR":
+                data.MSZoning[i] = "RM"
 
     # TODO: convert to one hot representation
     data['MSZoning'].replace("A",1,inplace=True)
@@ -952,8 +961,7 @@ def make_model(model_name,num_features):
     melbourne_model.add(keras.layers.Dense(1, activation='relu', kernel_initializer='he_normal'))   # MAE: 922165
 
     #sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 460326
- #   melbourne_model.compile(loss="mean_squared_error", optimizer='rmsprop') # Does converge slowly
-    melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
+    melbourne_model.compile(loss=args.loss, optimizer=adam) # Does converge slowly
     return melbourne_model
 
 def make_relu_model(model_name,model_desc,num_features):
@@ -975,7 +983,7 @@ def make_relu_model(model_name,model_desc,num_features):
             desc_str += "-"+str(desc[i])
 
     print(desc_str)
-    melbourne_model.compile(loss="mean_squared_error", optimizer=adam)
+    melbourne_model.compile(loss=args.loss, optimizer=adam)
     return melbourne_model
 
 # TODO: figure out how to initialize bias for SNN
@@ -1001,7 +1009,7 @@ def make_selu_model(model_name,model_desc,num_features):
 
     adam = keras.optimizers.Adam() # Does converge slowly 
     #sgd = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9) # MAE: 
-    melbourne_model.compile(loss="mean_squared_error", optimizer=adam) # Does converge slowly
+    melbourne_model.compile(loss=args.loss, optimizer=adam) # Does converge slowly
     return melbourne_model
 
 def normalize_input(output_dir, data):
@@ -1030,7 +1038,7 @@ def train(model_name, model_desc, num_epochs, X, y):
     initial_epoch = 1
     if model_name == "":
         model_name = "FFN"
-    output = model_name + "_" + model_desc + "-num_epochs-" + str(num_epochs)
+    output = model_name + "_" + model_desc + "-" + args.loss + "-num_epochs-" + str(num_epochs)
     # TODO: Get name of model from compiled model and make
     # name of file to save to based on that
     if os.path.isdir(output):
@@ -1062,7 +1070,7 @@ def train(model_name, model_desc, num_epochs, X, y):
     print("Making predictions for following houses")
     predictions = melbourne_model.predict(X.values)
 
-    print("MAE:",mean_absolute_error(predictions,y.values))
+    print("MAE:",mean_squared_log_error(predictions,y.values))
 # The Melbourne data has somemissing values (some houses for which some variables weren't recorded.)
 # We'll learn to handle missing values in a later tutorial.  
 # Your Iowa data doesn't have missing values in the predictors you use. 
@@ -1077,8 +1085,7 @@ def validate(model_name, X, Y):
     if model_name[0:3] == "SNN":
         normalize_input("",X)
     predictions = melbourne_model.predict(X.values)
-    
-    print("MAE:",mean_absolute_error(predictions,Y.values))
+    print("MAE:",mean_squared_log_error(predictions,Y.values))
     return
 
 def infer(model_name, X, Ids):
@@ -1103,6 +1110,7 @@ if __name__ == "__main__":
     parser.add_argument("--type", help="Type of Model to be used for training/inference", type=str, default="")
     parser.add_argument("--model", help="Model to be used for training/inference", type=str, default="20,20,1")
     parser.add_argument("--scaler", help="Use standard scaler instead of computing one from data", type=str, default="")
+    parser.add_argument("--loss", help="Loss function to be used", type=str, default="mean_squared_error")
     parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="comp:train.csv")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     args = parser.parse_args()

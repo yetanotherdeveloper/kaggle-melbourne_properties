@@ -177,8 +177,11 @@ Ignoring SaleType, YrSold, MoSold. Should I ignore SaleCondition?
 
 MasVnrType and MasVnrArea
 
+MSZoning was filled based on majority in this neighbourhood
+
 Make some experimetns
 
 Val 0 , train 100 -- to find a model when it does to capable enough. And then increase validation
 
 SNN infer does not work. Why? 
+normalizatin was added still some results were poor
