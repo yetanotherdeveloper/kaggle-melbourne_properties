@@ -185,3 +185,8 @@ Val 0 , train 100 -- to find a model when it does to capable enough. And then in
 
 SNN infer does not work. Why? 
 normalizatin was added still some results were poor
+
+
+SFN - Swish function testing
+
+normalization with swish

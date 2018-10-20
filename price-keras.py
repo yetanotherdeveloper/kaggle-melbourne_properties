@@ -16,6 +16,11 @@ import argparse
 import pickle
 import os
 
+class Swish(keras.layers.Activation):
+    def __init__(self, activation, **kwargs):
+        super(Swish, self).__init__(activation, **kwargs)
+        self.__name__ = 'swish'
+
 def string2integer(ref,data,key):
     if key in ref:
         select = data[key]
@@ -986,7 +991,32 @@ def make_relu_model(model_name,model_desc,num_features):
     melbourne_model.compile(loss=args.loss, optimizer=adam)
     return melbourne_model
 
-# TODO: figure out how to initialize bias for SNN
+def make_swish_model(model_name,model_desc,num_features):
+
+    def swish(x):
+        return (keras.activations.sigmoid(x)*x)
+    # Prase description of model
+    desc = parse_desc(model_desc)
+
+    # Building model: 
+    adam = keras.optimizers.Adam() # Does converge slowly 
+    melbourne_model = keras.models.Sequential(name="-"+model_name + "-Adam")
+    keras.utils.get_custom_objects().update({'swish' : Swish(swish)})
+
+    desc_str = "Swish model: "
+    for i in range(0,len(desc)):
+        if i == 0:
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish', kernel_initializer='he_normal', input_dim=num_features))
+            desc_str += str(desc[i])
+        else:
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish', kernel_initializer='he_normal'))
+            desc_str += "-"+str(desc[i])
+
+    print(desc_str)
+    melbourne_model.compile(loss=args.loss, optimizer=adam)
+    return melbourne_model
+
+
 def make_selu_model(model_name,model_desc,num_features):
 
     # Prase description of model
@@ -1049,6 +1079,8 @@ def train(model_name, model_desc, num_epochs, X, y):
     elif model_name == "SNN":
         normalize_input(output,X)
         melbourne_model = make_selu_model(model_name,model_desc,len(X.columns))
+    elif model_name == "SFN": # Swish forward network
+        melbourne_model = make_swish_model(model_name,model_desc,len(X.columns))
     else:
         tmpstr = model_name[:model_name.find("-val_loss")]
         initial_epoch = int(tmpstr[tmpstr.rfind("-")+1:])
