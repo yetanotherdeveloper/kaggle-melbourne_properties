@@ -189,4 +189,9 @@ normalizatin was added still some results were poor
 
 SFN - Swish function testing
 
+SWISH 27,27,1 0.0209 vs Relu 27,27,1 0.0214
+
+Exactly same model 27,27,1 and we progress towards relu by 30 location (3090 -> 3060)
+
 normalization with swish
+

@@ -21,6 +21,9 @@ class Swish(keras.layers.Activation):
         super(Swish, self).__init__(activation, **kwargs)
         self.__name__ = 'swish'
 
+def swish(x):
+        return (keras.activations.sigmoid(x)*x)
+
 def string2integer(ref,data,key):
     if key in ref:
         select = data[key]
@@ -993,8 +996,6 @@ def make_relu_model(model_name,model_desc,num_features):
 
 def make_swish_model(model_name,model_desc,num_features):
 
-    def swish(x):
-        return (keras.activations.sigmoid(x)*x)
     # Prase description of model
     desc = parse_desc(model_desc)
 
@@ -1082,9 +1083,10 @@ def train(model_name, model_desc, num_epochs, X, y):
     elif model_name == "SFN": # Swish forward network
         melbourne_model = make_swish_model(model_name,model_desc,len(X.columns))
     else:
+        keras.utils.get_custom_objects().update({'swish' : Swish(swish)})
         tmpstr = model_name[:model_name.find("-val_loss")]
         initial_epoch = int(tmpstr[tmpstr.rfind("-")+1:])
-        melbourne_model = keras.models.load_model(model_name)
+        melbourne_model = keras.models.load_model(model_name,custom_objects={'swish' : Swish(swish)})
     num_epochs += initial_epoch - 1
 
     show_stopper = keras.callbacks.EarlyStopping(monitor='val_loss',patience=num_epochs-10, verbose=1)
@@ -1113,7 +1115,7 @@ def validate(model_name, X, Y):
     if model_name == "":
         print("Error: Validation mode require model given with --model option")
         exit(-1)
-    melbourne_model = keras.models.load_model(model_name)
+    melbourne_model = keras.models.load_model(model_name, custom_objects={'swish' : Swish(swish)})
     if model_name[0:3] == "SNN":
         normalize_input("",X)
     predictions = melbourne_model.predict(X.values)
@@ -1125,7 +1127,7 @@ def infer(model_name, X, Ids):
         print("Error: Inference mode require model given with --model option")
         exit(-1)
 
-    melbourne_model = keras.models.load_model(model_name)
+    melbourne_model = keras.models.load_model(model_name, custom_objects={'swish' : Swish(swish)})
     if model_name[0:3] == "SNN":
         normalize_input("",X)
     predictions = melbourne_model.predict(X.values)
