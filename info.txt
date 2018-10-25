@@ -193,5 +193,23 @@ SWISH 27,27,1 0.0209 vs Relu 27,27,1 0.0214
 
 Exactly same model 27,27,1 and we progress towards relu by 30 location (3090 -> 3060)
 
-normalization with swish
+- normalization with swish
 
+- regularization 27-27-1 
+L2(0.01)  0.1454
+L2(0.001) 0.04951
+
+try lasso regularization L1:
+/l1(0.001) 0.045
+/l1(0.0001) 0.042
+
+Swish with normalization (300 epochs):
+train MAE: 0.008501101108399332
+something wrong with scaler unpickling
+
+- 1000 epochs is overfitting definetly
+
+
+- Next make correlation graph
+-analyze
+https://www.kaggle.com/nityeshaga/modelling-the-real-estate-scene-of-ames

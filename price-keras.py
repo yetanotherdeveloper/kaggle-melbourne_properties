@@ -1007,10 +1007,12 @@ def make_swish_model(model_name,model_desc,num_features):
     desc_str = "Swish model: "
     for i in range(0,len(desc)):
         if i == 0:
-            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish', kernel_initializer='he_normal', input_dim=num_features))
+            #melbourne_model.add(keras.layers.Dense(desc[i], activation='swish', kernel_regularizer=keras.regularizers.l1(0.0001),
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish',
+                kernel_initializer='he_normal', input_dim=num_features))
             desc_str += str(desc[i])
         else:
-            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish', kernel_initializer='he_normal'))
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish' , kernel_initializer='he_normal'))
             desc_str += "-"+str(desc[i])
 
     print(desc_str)
@@ -1075,10 +1077,12 @@ def train(model_name, model_desc, num_epochs, X, y):
     if os.path.isdir(output):
         shutil.rmtree(output)
     os.mkdir(output)
+    if args.normalize == True:
+        normalize_input(output,X)
+
     if model_name == "" or model_name == "FFN": 
         melbourne_model = make_relu_model(model_name,model_desc,len(X.columns))
     elif model_name == "SNN":
-        normalize_input(output,X)
         melbourne_model = make_selu_model(model_name,model_desc,len(X.columns))
     elif model_name == "SFN": # Swish forward network
         melbourne_model = make_swish_model(model_name,model_desc,len(X.columns))
@@ -1116,7 +1120,7 @@ def validate(model_name, X, Y):
         print("Error: Validation mode require model given with --model option")
         exit(-1)
     melbourne_model = keras.models.load_model(model_name, custom_objects={'swish' : Swish(swish)})
-    if model_name[0:3] == "SNN":
+    if args.scaler != "":
         normalize_input("",X)
     predictions = melbourne_model.predict(X.values)
     print("MAE:",mean_squared_log_error(predictions,Y.values))
@@ -1147,8 +1151,9 @@ if __name__ == "__main__":
     parser.add_argument("--loss", help="Loss function to be used", type=str, default="mean_squared_error")
     parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="comp:train.csv")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
+    parser.add_argument("--normalize", help="Perform normalization", action="store_true")
     args = parser.parse_args()
-
+    
     if args.dataset[0:4] == 'melb':
         trainX, testX, trainY, testY = prepare_melbourne_dataset(args.dataset[5:])
     elif args.dataset[0:4] == 'comp':
