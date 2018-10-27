@@ -447,7 +447,6 @@ def fill_electrical_up(data):
 
 def convert_mszoning(data):
 
-    #import pdb; pdb.set_trace()
     #data.MSZoning[455] = "RM"
     #data.MSZoning[756] = "RM"
     #data.MSZoning[790] = "RM"
@@ -462,17 +461,21 @@ def convert_mszoning(data):
             if data.Neighborhood[i] == "IDOTRR":
                 data.MSZoning[i] = "RM"
 
-    # TODO: convert to one hot representation
-    data['MSZoning'].replace("A",1,inplace=True)
-    data['MSZoning'].replace("C",2,inplace=True)
-    data['MSZoning'].replace("C (all)",3,inplace=True)
-    data['MSZoning'].replace("FV",4,inplace=True)
-    data['MSZoning'].replace("I",5,inplace=True)
-    data['MSZoning'].replace("RH",6,inplace=True)
-    data['MSZoning'].replace("RL",7,inplace=True)
-    data['MSZoning'].replace("RP",8,inplace=True)
-    data['MSZoning'].replace("RM",9,inplace=True)
+    categories = {'A' : 0, 'C': 1, "C (all)" : 2, "FV" : 3, "I" : 4, "RH" : 5, "RL" : 6, "RP" : 7, "RM" : 8}
+    for key in categories.keys():
+        data['MSZoning'].replace(key,categories[key],inplace=True)
+    if args.onehot:
+        onehots = []
+        row = [ 0 for i in range(0,len(categories))]
+        for entity in data["MSZoning"]:
+            data_row = row
+            data_row[entity] = 1
+            onehots.append(data_row)
 
+        df_onehots = pd.DataFrame(data=onehots, columns=["MSZoning_"+str(i) for i in range(0,len(categories))]) 
+        data = pd.concat([data,df_onehots],axis=1)
+        # Remove integer encoded column
+        data = data.drop('MSZoning',axis=1)
     return
 
 
@@ -1152,6 +1155,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="comp:train.csv")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     parser.add_argument("--normalize", help="Perform normalization", action="store_true")
+    parser.add_argument("--onehot", help="Perform one hot encoding for arbitrary selected columns", action="store_true")
     args = parser.parse_args()
     
     if args.dataset[0:4] == 'melb':
