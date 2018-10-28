@@ -205,6 +205,7 @@ try lasso regularization L1:
 
 Swish with normalization (300 epochs):
 train MAE: 0.008501101108399332
+train loss: 0.0035 - val_loss: 0.0278  ==> can regularization help with that?
 something wrong with scaler unpickling
 
 - 1000 epochs is overfitting definetly
@@ -213,3 +214,4 @@ something wrong with scaler unpickling
 - Next make correlation graph
 -analyze
 https://www.kaggle.com/nityeshaga/modelling-the-real-estate-scene-of-ames
+- Regularization + normalization?

@@ -992,10 +992,14 @@ def make_relu_model(model_name,model_desc,num_features):
     desc_str = "Relu model: "
     for i in range(0,len(desc)):
         if i == 0:
-            melbourne_model.add(keras.layers.Dense(desc[i], activation='relu', kernel_initializer='he_normal', input_dim=num_features))
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='relu',
+                kernel_regularizer=keras.regularizers.l1(0.0001) if args.regularize == True else None,
+                kernel_initializer='he_normal', input_dim=num_features))
             desc_str += str(desc[i])
         else:
-            melbourne_model.add(keras.layers.Dense(desc[i], activation='relu', kernel_initializer='he_normal'))
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='relu', 
+                kernel_regularizer=keras.regularizers.l1(0.0001) if args.regularize == True else None,
+                kernel_initializer='he_normal'))
             desc_str += "-"+str(desc[i])
 
     print(desc_str)
@@ -1015,12 +1019,14 @@ def make_swish_model(model_name,model_desc,num_features):
     desc_str = "Swish model: "
     for i in range(0,len(desc)):
         if i == 0:
-            #melbourne_model.add(keras.layers.Dense(desc[i], activation='swish', kernel_regularizer=keras.regularizers.l1(0.0001),
-            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish',
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish', 
+                kernel_regularizer=keras.regularizers.l1(0.0001) if args.regularize == True else None,
                 kernel_initializer='he_normal', input_dim=num_features))
             desc_str += str(desc[i])
         else:
-            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish' , kernel_initializer='he_normal'))
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='swish' ,
+                kernel_regularizer=keras.regularizers.l1(0.0001) if args.regularize == True else None,
+                kernel_initializer='he_normal'))
             desc_str += "-"+str(desc[i])
 
     print(desc_str)
@@ -1160,6 +1166,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset", help="Data Set for training/inference", type=str, default="comp:train.csv")
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     parser.add_argument("--normalize", help="Perform normalization", action="store_true")
+    parser.add_argument("--regularize", help="Perform regularization L1", action="store_true")
     parser.add_argument("--onehot", help="Perform one hot encoding for arbitrary selected columns", action="store_true")
     args = parser.parse_args()
     
