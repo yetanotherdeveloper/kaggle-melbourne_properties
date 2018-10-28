@@ -472,11 +472,11 @@ def convert_mszoning(data):
             data_row[entity] = 1
             onehots.append(data_row)
 
-        df_onehots = pd.DataFrame(data=onehots, columns=["MSZoning_"+str(i) for i in range(0,len(categories))]) 
+        df_onehots = pd.DataFrame(data=onehots, columns=["MSZoning_"+str(i) for i in range(0,len(categories))])
         data = pd.concat([data,df_onehots],axis=1)
         # Remove integer encoded column
         data = data.drop('MSZoning',axis=1)
-    return
+    return data
 
 
 def convert_street(data):
@@ -847,7 +847,7 @@ def load_and_preprocess_comp_data(data_path):
     fill_bsmthalfbath_up(data)
     fill_electrical_up(data)
     fill_masvnrarea_up(data)
-    convert_mszoning(data)
+    data =convert_mszoning(data)
     convert_street(data)
     convert_lotshape(data)
     convert_LandContour(data)
@@ -946,7 +946,12 @@ def prepare_competition_dataset(data_file):
     data = load_and_preprocess_comp_data(data_file)
     # Ignored:
     # Id,SalePrice, YrSold, MoSold, SaleType
-    input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'SaleCondition']
+    if args.onehot:
+        input_features = ['Alley','MSSubClass',
+            'MSZoning_0', 'MSZoning_1', 'MSZoning_2', 'MSZoning_3', 'MSZoning_4','MSZoning_5', 'MSZoning_6', 'MSZoning_7','MSZoning_8',
+            'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'SaleCondition']
+    else:
+        input_features = ['Alley','MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'MasVnrArea', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtFinType2', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath',  'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature', 'MiscVal', 'SaleCondition']
     return data['Id'], data[input_features], data['SalePrice'] if args.train == True or args.validate == True else None
 
 def parse_desc(model_desc):
@@ -1135,7 +1140,7 @@ def infer(model_name, X, Ids):
         exit(-1)
 
     melbourne_model = keras.models.load_model(model_name, custom_objects={'swish' : Swish(swish)})
-    if model_name[0:3] == "SNN":
+    if args.scaler != "":
         normalize_input("",X)
     predictions = melbourne_model.predict(X.values)
     print("Id,SalePrice")        
