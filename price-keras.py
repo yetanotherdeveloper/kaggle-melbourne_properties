@@ -1172,6 +1172,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_epochs", help="Number of epochs to perform", type=int, default=10)
     parser.add_argument("--normalize", help="Perform normalization", action="store_true")
     parser.add_argument("--regularize", help="Perform regularization L1", action="store_true")
+    parser.add_argument("--checkpoints", help="Perform storing model params on checkpoints", action="store_true")
     parser.add_argument("--onehot", help="Perform one hot encoding for arbitrary selected columns", action="store_true")
     args = parser.parse_args()
     
