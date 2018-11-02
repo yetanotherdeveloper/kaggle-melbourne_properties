@@ -809,9 +809,7 @@ def convert_PavedDrive(data):
     data['PavedDrive'].replace("Y",2,inplace=True)
     return
 
-
-def load_and_preprocess_comp_data(data_path):
-    data = pd.read_csv(data_path)
+def convert_GrLivArea(data):
 
     # Based on paper on IOWA dataset and chart GRLivArea/SalePrice
     # We can see that SalePrice of houses GrLivArea of values above 4000 square feets are strange
@@ -819,7 +817,21 @@ def load_and_preprocess_comp_data(data_path):
     # Author of Iowa data set recommend to remove
     # bigger GrLivArea that 4000 , but it cannot be done
     # as kaggle submission (test) require also that one
-    #data = data[data.GrLivArea <= 4000]
+    # We remove only in training mode
+    # data = data[data.GrLivArea <= 4000]
+
+    # For training, remove 
+    to_drop = []
+    if args.train == True:
+        for i in range(0,len(data)):
+            if data.GrLivArea[i] >= 4000 and data.SalePrice[i] < 300000 :
+                to_drop.append(i)
+    data.drop(to_drop,inplace=True)
+    return data
+
+def load_and_preprocess_comp_data(data_path):
+    data = pd.read_csv(data_path)
+
     fill_alley_up(data)
     fill_lotfrontage(data)
     fill_fireplaceqa_up(data)
@@ -846,7 +858,8 @@ def load_and_preprocess_comp_data(data_path):
     fill_bsmthalfbath_up(data)
     fill_electrical_up(data)
     fill_masvnrarea_up(data)
-    data =convert_mszoning(data)
+    data = convert_mszoning(data)
+    data = convert_GrLivArea(data)
     convert_street(data)
     convert_lotshape(data)
     convert_LandContour(data)
