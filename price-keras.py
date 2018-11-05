@@ -981,15 +981,29 @@ def parse_desc(model_desc):
 
 def make_model(model_name,model_desc,num_features):
     # Building model: 
+    desc = parse_desc(model_desc)
     adam = keras.optimizers.Adam() # Does converge slowly 
     melbourne_model = keras.models.Sequential(name="-"+model_name + "-Adam")
     
-    melbourne_model.add(keras.layers.Dense(20, activation='tanh',kernel_initializer='glorot_normal',
-	input_dim=num_features))
-    melbourne_model.add(keras.layers.Dense(20, activation='tanh',kernel_initializer='glorot_normal'))
-    melbourne_model.add(keras.layers.Dense(1, activation='linear', ))   # MAE: 922165
+    desc_str = "Tanh model: "
+    for i in range(0,len(desc)):
+        if i == 0:
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='tanh',
+                kernel_regularizer=keras.regularizers.l1(0.0001) if args.regularize == True else None,
+                kernel_initializer='glorot_normal', input_dim=num_features))
+            desc_str += str(desc[i])
+	elif desc[i] == 1:
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='linear', 
+                kernel_regularizer=keras.regularizers.l1(0.0001) if args.regularize == True else None,
+                kernel_initializer='glorot_normal'))
+            desc_str += "-"+str(desc[i])
+        else:
+            melbourne_model.add(keras.layers.Dense(desc[i], activation='tanh', 
+                kernel_regularizer=keras.regularizers.l1(0.0001) if args.regularize == True else None,
+                kernel_initializer='glorot_normal'))
+            desc_str += "-"+str(desc[i])
 
-    #sgd = keras.optimizers.SGD(lr=0.0005, decay=1e-6, momentum=0.9) # MAE: 460326
+    print(desc_str)
     melbourne_model.compile(loss=args.loss, optimizer=adam) # Does converge slowly
     return melbourne_model
 
